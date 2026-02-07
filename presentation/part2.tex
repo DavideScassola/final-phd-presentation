@@ -1,0 +1,325 @@
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{The Problem}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+      \textbf{Generating synthetic relational data}:
+      \begin{itemize}
+        \item Multiple tables (structured, relatively low dimensional, heterogeneous data)
+        \item Foreign-key relationships between records
+      \end{itemize}
+      \bigskip
+      \textbf{Why?}
+      \begin{itemize}
+        \item Privacy: share useful synthetic data while preserving privacy
+        \item Data Augmentation
+      \end{itemize}
+
+    \column{0.4\textwidth}
+      \begin{figure}
+        \includegraphics[width=\textwidth, page=1]{assets/images/graphics.pdf}
+        %\caption{Relational database schema.}
+      \end{figure}
+  \end{columns}
+\end{frame}
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Generating relational data is hard}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.4\textwidth}
+    Generating relational data requires to model statistical dependencies between records connected by foreign keys (also inderectly).
+  \bigskip
+
+    Most existing methods show:
+    \begin{itemize}
+      \item Limited expressiveness (independence assumptions, heuristics)
+      \item Limited flexibility with arbitrary foreign key structures
+    \end{itemize}
+
+    \column{0.55\textwidth}
+     
+    \begin{center}
+      \includegraphics[width=\textwidth]{assets/images/tables.png}
+      %\caption{Relational database schema.}
+    \end{center}
+
+    \end{columns}
+  \end{frame}
+% -----------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Relational data is a graph}
+  A relational database can be represented as a large graph:
+  \begin{itemize}
+    \item Records $\rightarrow$ nodes
+    \item Foreign-key relationships $\rightarrow$ edges
+  \end{itemize}
+
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth, page=2]{assets/images/graphics_compressed.pdf}
+    %\caption{Relational database as a graph.}
+  \end{figure}
+
+  \begin{itemize}
+    \item The foreign key graph can be large and complex.
+    \item The i.i.d samples are the connected components of the graph.
+  \end{itemize}
+  
+  %Depending on the dataset, connected components can be very large.
+  %The IID samples of the data distribution are the connected components.
+
+\end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Graph-Conditional Generation with Flow Matching}
+
+Our approach: generate whole connected components conditioning on the foreign key graph.
+  \begin{enumerate}
+    \item Generate the foreign-key graph $G \sim p(G)$ using a scalable method
+    \item Use flow matching (diffusion-like generative model) for generating whole connected components $(X, G)$ by "filling" the empty foreign key graph $G$ with content $X$
+  \end{enumerate}
+     \begin{equation*}
+      p(G, X) = p(G) p(X \mid G)
+    \end{equation*}
+    
+  \begin{center}
+        \includegraphics[width=0.7\textwidth, page=3]{assets/images/graphics_compressed.pdf}
+    %\caption{Relational database as a graph.}
+  \end{center}
+
+ \end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Graph-conditional Flow Matching}
+  This approach has advantages:
+  \begin{itemize}
+    \item \textbf{Expressive}: records in a connected component are modelled jointly
+    \item \textbf{Flexible}: any foreign key graph can be used
+    \item \textbf{Scalable}: flow matching scales to large dimensionalities + no need for materializing the dense adjacency matrix
+  \end{itemize}
+
+  \begin{center}
+        \includegraphics[width=0.75\textwidth, page=3]{assets/images/graphics_compressed.pdf}
+    %\caption{Relational database as a graph.}
+  \end{center}
+
+ \end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{(Variational) Flow Matching \citep{flow_matching, eijkelboom2024variational}}
+  Flow Matching = Continuous Normalizing Flows (ODEs) + diffusion-like training
+  \begin{itemize}
+    \item \textbf{Sampling}: solve the ODE to map Gaussian noise to data:
+  \begin{equation*}
+  \frac{d}{dt}\,\varphi_t(\mathbf{x})=v_t(\varphi_t(\mathbf{x})), \quad \text{with initial condition } \varphi_0(\mathbf{x})=\mathbf{x}.
+  \end{equation*}
+    \item \textbf{Training}: learn field $v_t$ by \textcolor{red}{denoising} samples from a chosen \textcolor{blue}{conditional probability path}:
+    \begin{equation*}
+      \mathcal{L(\theta)} = - \mathbb{E}_{t \sim \mathcal{U}(0,1), \mathbf{x}_1 \sim p_{\text{data}}, \mathbf{x}_t \sim \textcolor{blue}{p_t(\mathbf{x}_t \mid \mathbf{x}_1)}} \left[ \textcolor{red} {\log{p_\theta(\mathbf{x}_1 \mid \mathbf{x}_t)}} \right] \qquad
+      v_t^\theta(\mathbf{x}_t) = \mathbb{E}_{\mathbf{x}_1 \sim \textcolor{red}{p_\theta(\mathbf{x}_1 \mid  \mathbf{x}_t)}} \left[ \textcolor{blue}{u_t(\mathbf{x}_t \mid \mathbf{x}_1)} \right]
+    \end{equation*}
+  \end{itemize}
+
+  \begin{figure}
+    \includegraphics[width=0.95\textwidth]{assets/images/flow_matching2.png}
+    %\caption{Image from https://mlhonk.substack.com/p/25-flow-matching.}
+  \end{figure}
+  \small
+  (Image from https://mlhonk.substack.com/p/25-flow-matching.)
+
+\end{frame}
+% -------------------------------------------------------------------------------------
+
+% % -------------------------------------------------------------------------------------
+% \begin{frame}[fragile]{(Variational) Flow Matching \citep{flow_matching, eijkelboom2024variational}}
+%   \begin{columns}[T,onlytextwidth]
+%     \column{0.5\textwidth}
+%   Continuous Normalizing Flows (ODEs) + diffusion-like training:
+%   \begin{itemize}
+%     \item \textbf{Sampling}: solve the ODE
+%   \begin{equation*}
+%   \frac{d}{dt}\,\varphi_t(\mathbf{x})=v_t(\varphi_t(\mathbf{x})), \quad \text{with initial condition } \varphi_0(\mathbf{x})=\mathbf{x}.
+%   \end{equation*}
+%     \item \textbf{Training}: learning the vector field $v_t$ by \textcolor{red}{denoising} samples from a chosen \textcolor{blue}{conditional probability path}:
+%     \begin{align*}
+%       \mathcal{L(\theta)} &= - \mathbb{E}_{t \sim \mathcal{U}(0,1), \mathbf{x}_1 \sim p_{\text{data}}, \mathbf{x}_t \sim \textcolor{blue}{p_t(\mathbf{x}_t \mid \mathbf{x}_1)}} \left[ \textcolor{red} {\log{p_\theta(\mathbf{x}_1 \mid \mathbf{x}_t)}} \right] \\
+%       v_t^\theta(\mathbf{x}_t) &= \mathbb{E}_{\mathbf{x}_1 \sim p_\theta(\mathbf{x}_1 \mid  \mathbf{x}_t)} \left[ \textcolor{blue}{u_t(\mathbf{x}_t \mid \mathbf{x}_1)} \right]
+%     \end{align*}
+%   \end{itemize}
+
+%     \column{0.45\textwidth}
+%     \begin{figure}
+%       \includegraphics[width=0.95\textwidth]{assets/images/flow_matching.pdf}
+%       \caption{Image from https://mlhonk.substack.com/p/25-flow-matching.}
+%     \end{figure}
+
+%   \end{columns}
+
+
+% \end{frame}
+% % -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Flow Matching for Relational Data: Training}
+\textbf{Training}:
+\begin{itemize}
+  \item Define a conditional probability path $\textcolor{blue}{p_t(X_t \mid X_1, G) = \prod p_t^i(x_t^i \mid x_1^i)}$ independently for each feature.
+  \item Learn a denoiser $\textcolor{red}{p_\theta(X_1 \mid X_t, G) = \prod p_\theta^i(x_1^i \mid X_t, G)}$
+  \item Categoricals are one-hot encoded, and the denoiser distribution is either a categorical or a Gaussian depending on the feature type
+\end{itemize}
+
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{assets/images/training.pdf}
+  \end{figure}
+
+\end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Flow Matching for Relational Data: Sampling}
+
+\textbf{Sampling}:
+\begin{enumerate}
+  \item Generate the foreign-key graph $G \sim p(G)$ (we just re-sample connected components
+from the original graph)
+  \item Initialize every node with Gaussian noise $X_0 \sim \mathcal{N}(0, I)$
+  \item Solve the ODE numerically using the learned velocity, parameterized by the learned denoiser:
+  \begin{equation*}
+  v_t^\theta(X_t) = \mathbb{E}_{\mathbf{X}_1 \sim \textcolor{red}{p_\theta(X_1 \mid  X_t, G)}} \left[ \textcolor{blue}{u_t(X_t \mid X_1)} \right] 
+  \end{equation*}
+\end{enumerate}
+
+  \begin{figure}
+    \includegraphics[width=0.8\textwidth]{assets/images/sampling.pdf}
+  \end{figure}
+
+\end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Denoiser Architecture}
+
+\begin{itemize}
+  \item A GNN computes node embeddings for each record
+  \begin{equation*}
+    \mathbf{\varepsilon}_t^i = \text{GNN}_\theta\left(X_t, G, t \right)^i
+  \end{equation*}
+
+  \item MLPs use noisy records and node embeddings to predict the clean record
+  \begin{equation*}
+    \hat{x}_1^i = \mathbb{E}_{p_\theta(x_1^i \mid X_t, G)} \left[ x_1^i \right] = \text{MLP}_\theta\left(x_t^i, \mathbf{\varepsilon}_t^i, t \right)
+  \end{equation*}
+\end{itemize}
+
+  \begin{figure}
+    \includegraphics[width=0.95\textwidth, page=5]{assets/images/graphics_compressed.pdf}
+    %\caption{Image from https://mlhonk.substack.com/p/25-flow-matching.}
+  \end{figure}
+
+\end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Controlling Generalization Error}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+
+      \begin{itemize}
+        \item We randomly split the nodes between train and validation nodes.
+        \item “Within sample” generalization $\rightarrow$ no need for training with many i.i.d. connected components!
+        \item Bottleneck on the GNN embedding size $\rightarrow$ prevents graph memorization
+      \end{itemize}
+
+    \column{0.45\textwidth}
+      \begin{figure}
+        \includegraphics[width=0.8\textwidth, page=6]{assets/images/graphics_compressed.pdf}
+        %\caption{Relational database schema.}
+      \end{figure}
+  \end{columns}
+
+\end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Results}
+  \begin{itemize}
+    \item We use the \textit{SyntheRela} benchmark library \citep{hudovernik2024benchmarking} for metrics and benchmarks.
+    \item Fidelity is measured as the accuracy of an XGBoost classifier, trained to distinguish real from generated records (the lower the better).
+    %\item Records are enriched with aggregated information from connected records
+    % \item We achieve State-of-the-art performances
+    % \item Ablation shows importance of GNN for modeling dependencies
+  \end{itemize}
+
+\begin{table}[ht]
+\centering
+%\caption{Average accuracy with standard deviation of an XGBoost multi-table discriminator using rows with aggregated statistics. For datasets with multiple parent tables, the highest accuracy was selected. The CORA dataset is the only one for which using GNN embeddings does not improve the evaluation metric. However, we noticed that the simple post-processing step consisting of removing duplicated records from a child table ($\approx 3\%$ of records), allowed us to obtain a performance of $\approx 0.50$. Moreover, we observed a lower validation loss when the GNN was used. Statistics are computed over three different runs.}
+\scriptsize
+\begin{tabular}{lcccccc}
+\toprule
+ & \textbf{AirBnB} & \textbf{Biodegradability} & \textbf{CORA} & \textbf{IMDB} & \textbf{Rossmann} & \textbf{Walmart}\\
+\midrule
+Ours & $\mathbf{0.58 \pm 0.03}$ & $\mathbf{0.59 \pm 0.02}$ & $0.63 \pm 0.02$ & $\mathbf{0.59 \pm 0.03}$ & $\mathbf{0.51 \pm 0.01}$ & $\mathbf{0.73 \pm 0.01}$ \\
+Ours (no GNN) & $0.70 \pm 0.005$ & $0.86 \pm 0.004$ & $0.62 \pm 0.004$ & $0.89 \pm 0.002$ & $0.75 \pm 0.01$ & $0.91 \pm 0.04$ \\
+\citet{hudovernik2024relational} & $0.67 \pm 0.003$ & $0.83 \pm 0.01$ & $\mathbf{0.60 \pm 0.01}$ & $0.64 \pm 0.01$ & $0.77 \pm 0.01$ & $0.79 \pm 0.04$ \\
+ClavaDDPM & $\approx 1$ & - & - & $0.83 \pm 0.004$ & $0.86 \pm 0.01$ & $0.74 \pm 0.05$ \\
+RCTGAN  & $0.98 \pm 0.001$ & $0.88 \pm 0.01$ & $0.73 \pm 0.01$ & $0.95 \pm 0.002$ & $0.88 \pm 0.01$ & $0.96 \pm 0.02$ \\
+REaLTabF. & $\approx 1$ & - & - & - & $0.92 \pm 0.01$ & $\approx 1$ \\
+SDV & $\approx 1$ & $0.98 \pm 0.01$ & $\approx 1$ & - & $0.98 \pm 0.003$ & $0.90 \pm 0.03$ \\
+\bottomrule
+\end{tabular}
+\label{tab:results}
+
+\end{table}
+
+  \begin{itemize}
+    \item We achieve State-of-the-art performances
+    %\item Ablation shows importance of GNN for modeling dependencies
+    \item \textbf{Privacy}: DCR (Distance to Closest Record) analysis does not highlight privacy leaks. Intuitively, we check if generated records are too similar to real records in the training set.
+  \end{itemize}
+
+\end{frame}
+% ------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Our Contribution}
+
+  \textbf{Expressiveness}
+  \begin{itemize}
+    \item We model whole connected components (no independence assumptions) with flow matching + GNNs for handling graphs.
+    \item We achieve generalization by controlling “within sample” generalization and and apply a bottleneck on the GNN embedding size. 
+  \end{itemize}
+
+  \textbf{Flexibility}
+  \begin{itemize}
+    \item The GNN-based denoiser supports any kind of graph.
+  \end{itemize}
+
+  \textbf{Scalability}
+  \begin{itemize}
+    \item Flow matching scales with large dimensionalities.
+    \item We avoid dealing with dense adjacency matrix.
+    %\item The GNN scales since number of edges is proportional to number of nodes.
+  \end{itemize}
+
+\end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Final Thoughts}
+
+  \textbf{Limitations}
+  \begin{itemize}
+    \item Not a model of the foreign-key graph $p(G)$
+    %\item Our implementation requires connected components to fit in GPU memory
+    \item Hyperparameter tuning for each dataset
+  \end{itemize}
+
+  \textbf{Future Work}
+  \begin{itemize}
+    \item Better engineer the denoiser, e.g., more advanced GNN architectures
+    \item Batching strategies to scale to larger connected components
+  \end{itemize}
+
+\end{frame}
+% -------------------------------------------------------------------------------------

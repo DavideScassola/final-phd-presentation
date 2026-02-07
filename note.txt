@@ -1,0 +1,29 @@
+1: Title:
+    - Title
+    - Logos
+    - Supervisors
+
+2: Publications:
+    - AAAI25
+    - AAAI26
+    - working paper?
+    - NCA (not part of the content)
+    
+3: Introduction: Context
+    - Generative AI
+    - Tabular data
+    - Applications
+
+4: Introduction: My contribution
+    - explain the title: I worked on making generative for tabular and relational data models more flexible and more expressive, in particular.
+    1: Method for training-free conditioning, according to logical constraints
+    2: Method for generating relation data without with maximal expressivity (no independence assumptions)
+    3: Generate tabular data with tractable models
+
+5: Training-free conditioning of ....
+    - Problem: Generative models cannot be conditioned on logical constraints without specific training for any constraint.
+    - We propose a method for enforcing user defined logical constraints on pre-trained score-based diffusion models.
+    We prove we achieve sota results for approximating condtional distributions when applied to tabular data.
+
+
+Copying slides???
