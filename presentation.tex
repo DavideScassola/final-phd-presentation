@@ -34,37 +34,106 @@
 
 \newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
 
-\title{Graph-Conditional Flow Matching for Relational Data Generation}
+\title{Towards Flexible and Expressive Generative Models for Tabular and Relational Data}
 %\subtitle{A modern beamer theme}
 % \date{\today}
-\date{}
+\date{25 February 2026}
+
+
+    % \begin{minipage}[t]{0.45\textwidth}
+    % \centering
+    %     \large
+    %     \textbf{Candidate}\par
+    %     Davide Scassola\par
+    % \end{minipage}
+    % \hfill
+    % \begin{minipage}[t]{0.45\textwidth}
+    % \centering
+    %     \large
+    %     \textbf{Supervisor}\par
+    %     Prof. Luca Bortolussi\par
+    %     \textbf{Co-supervisor}\par
+    %     Sebastiano Saccani\par
+    % \end{minipage}
+
+
+    % {\Large \textsc{Università degli Studi di Trieste}\par}
+     
+    % \vspace{0.3cm}
+    % {\Large \textbf{Ph.D. in Applied Data Science \& Artificial Intelligence}\par}
+    % \vspace{0.3cm}
+    % {\normalfont \textit{XXXVIII cycle} \par}
+    % \vspace{2.3cm}
+
+
 \author[Scassola \and Saccani \and Bortolussi]{%
-  Davide Scassola\inst{1,2} \and
-  Sebastiano Saccani\inst{2} \and
-  Luca Bortolussi\inst{1}%
+  \textbf{PhD candidate}: Davide Scassola \\
+  \textbf{Supervisor}: Luca Bortolussi \\
+  \textbf{Co-supervisor}: Sebastiano Saccani
 }
-\institute[UniTS \and Aindo SpA]{%
-  \inst{1} AI\textsc{lab}, University of Trieste, Trieste, Italy\\
-  \inst{2} Aindo SpA, AREA Science Park, Trieste, Italy\\
-}
+
 \titlegraphic{%
   \centering
-  \parbox{0.8\textwidth}{%
-    \begin{minipage}[c][1.5cm][c]{0.8\textwidth}
-      \centering
-      \raisebox{-0.5\height}{\includegraphics[height=1.2cm]{assets/logos/logo_UNITS.png}}%
-      \hspace*{0.07\textwidth}%
-      \raisebox{-0.5\height}{\includegraphics[height=1.2cm]{assets/logos/logo_ailab.pdf}}%
-      \hspace*{0.07\textwidth}%
-      \raisebox{-0.5\height}{\includegraphics[height=0.9cm]{assets/logos/logo_aindo.png}}%
-    \end{minipage}%
-  }%
+  \raisebox{-0.5\height}{\includegraphics[height=1.1cm]{assets/logos/logo_UNITS.png}}%
+  \hfill
+  \raisebox{-0.5\height}{\includegraphics[height=1.1cm]{assets/logos/logo_adsai.pdf}}%
+  \hfill
+  \raisebox{-0.5\height}{\includegraphics[height=1.1cm]{assets/logos/logo_ailab.pdf}}%
+  \hfill
+  \raisebox{-0.5\height}{\includegraphics[height=0.6cm]{assets/logos/logo_aindo.png}}%
 }
 
 \begin{document}
 
-\maketitle
+% Custom title slide with institution information
+{
+\setbeamertemplate{title page}{
+  \raisebox{-0.5\height}{\includegraphics[height=1.1cm]{assets/logos/logo_UNITS.png}}%
+  \hfill
+  \raisebox{-0.5\height}{\includegraphics[height=1.1cm]{assets/logos/logo_adsai.pdf}}%
+  \hfill
+  \raisebox{-0.5\height}{\includegraphics[height=1.1cm]{assets/logos/logo_ailab.pdf}}%
+  \hfill
+  \raisebox{-0.5\height}{\includegraphics[height=0.6cm]{assets/logos/logo_aindo.png}}%
 
+  \vspace{0.2cm}
+
+  \centering
+  {\Large \textsc{Università degli Studi di Trieste}\par}
+  \vspace{0.1cm}
+  {\normalsize \textbf{Ph.D. in Applied Data Science \& Artificial Intelligence}\par}
+  %\vspace{0.1cm}
+  {\small \textit{XXXVIII cycle} \par}
+
+  %\vspace{0.4cm}
+  {\Large \textbf{\inserttitle}\par}
+
+  \vspace{0.4cm}
+
+    \begin{minipage}[t]{0.45\textwidth}
+    \centering
+        \normalsize
+        \textbf{PhD Candidate}\par
+        Davide Scassola\par
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth}
+    \centering
+        \normalsize
+        \textbf{Supervisor}\par
+        Prof. Luca Bortolussi\par
+        \textbf{Co-supervisor}\par
+        Sebastiano Saccani\par
+    \end{minipage}
+
+  \vspace{0.3cm}
+  {\small \insertdate\par}
+
+}
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+}
 \input{presentation/introduction.tex}
 \input{presentation/part1.tex}
 \input{presentation/part2.tex}
