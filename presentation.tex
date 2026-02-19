@@ -24,6 +24,7 @@
 \usepackage{multirow} % for \multirow in tables
 
 \usepackage{hyperref}
+\usepackage{bibentry}
 
 % \hypersetup{
 %     colorlinks=true,
@@ -32,7 +33,16 @@
 %     urlcolor=blue
 % }
 
+
 \newcommand{\themename}{\textbf{\textsc{metropolis}}\xspace}
+\newcommand{\myvec}[1]{\ensuremath{\mathbf{#1}}}         % vectors
+\newcommand{\mymat}[1]{\ensuremath{\boldsymbol{#1}}}         % matrices
+\newcommand{\myid}{\ensuremath{\mathbf{I}}}
+\newcommand{\whitenoise}{\ensuremath{\mathcal{N}(\myvec{0},\myvec{I})}}
+\newcommand*{\data}{\ensuremath{\mathbf{x}}}
+\usepackage{xstring}
+\newcommand*\diff{\mathop{}\!\mathrm{d}}
+\newcommand\norm[1]{\left\|#1\right\|^2_2}
 
 \title{Towards Flexible and Expressive Generative Models for Tabular and Relational Data}
 %\subtitle{A modern beamer theme}
@@ -136,19 +146,6 @@
 \input{presentation/part2.tex}
 \input{presentation/part3.tex}
 \input{presentation/conclusion.tex}
-
-
-% -------------------------------------------------------------------------------------
-%{\setbeamercolor{palette primary}{fg=black, bg=yellow}
-\begin{frame}[standout]
-  \vspace{10mm}
-  Thank you! Questions?
-  \begin{center}
-    \includegraphics[width=0.4\textwidth, page=2]{assets/images/qr_code_2.pdf}
-  \end{center}
-\end{frame}
-%}
-% -------------------------------------------------------------------------------------
 
 % -------------------------------------------------------------------------------------
 \begin{frame}[allowframebreaks]{References}

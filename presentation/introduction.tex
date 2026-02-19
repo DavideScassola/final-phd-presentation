@@ -1,0 +1,146 @@
+\section{Introduction}
+
+%-----------------------------------
+\begin{frame}
+
+\frametitle{Publications}
+
+% We list below the articles that form the basis of this thesis published by the time of writing:
+% TODO: update with your publications
+
+These are the publications that form the basis of this thesis, published by the time of writing:
+\begin{itemize}
+%\nobibliography*
+    % \item \citet{scassola2025zero} \bibentry{scassola2025zero}.\footnotemark
+    % \footnotetext{\scriptsize Code available at: \url{https://github.com/DavideScassola/score-based-constrained-generation}}
+    
+    % \item \citet{scassola2025graph} \bibentry{scassola2025graph} (Accepted at AAAI$26$)\footnotemark
+    % \footnotetext{\scriptsize Code available at: \url{https://github.com/DavideScassola/graph-conditional-flow-matching}}
+    
+    % \item \cite{bortolussi2023model} \bibentry{bortolussi2023model}.
+
+    % \item \cite{cornalba2024multi} \bibentry{cornalba2024multi}.
+    \item \textbf{Graph-Conditional Flow Matching for Relational Data Generation}. Scassola, Davide, Sebastiano Saccani, and Luca Bortolussi. Accepted at AAAI 2026.    
+
+    \item \textbf{Zero-Shot Conditioning of Score-Based Diffusion Models by Neuro-Symbolic Constraints}. Scassola, D., S. Saccani, G. Carbone, and L. Bortolussi. Proceedings of the AAAI Conference on Artificial Intelligence (2025).
+
+    \item \textbf{Model Abstraction and Conditional Sampling with Score-Based Diffusion Models}. Bortolussi, Luca, et al. "Model Abstraction and Conditional Sampling with Score-Based Diffusion Models." International Conference on Quantitative Evaluation of Systems (2023).
+    
+\end{itemize}
+
+Unrelated publications:
+\begin{itemize}
+    \item "Multi-objective reward generalization: improving performance of Deep Reinforcement Learning for applications in single-asset trading." Cornalba, Federico, et al. Neural Computing and Applications (2024).
+\end{itemize}
+
+
+%We will highlight when a chapter or (sub)section of a chapter is based on a published work.
+%
+% TODO: update with your publications
+
+% The following other publications during the PhD studies do not contribute to the contents of this thesis: \citet{bortolussi2023model}, a short paper discussing a potential way to apply conditional sampling with score-based generative models to surrogate stochastic models, and \citet{cornalba2024multi}, where we investigate the potential of Multi-Objective, Deep Reinforcement Learning for stock and cryptocurrency single-asset trading.
+\end{frame}
+%-----------------------------------
+
+
+
+
+%-----------------------------------
+\begin{frame}
+
+\frametitle{Context}
+
+\begin{itemize}
+    \item Generative modeling has advanced rapidly, its developement mostly focused of unstructured data as images, videos, audios and text.
+    \item \textbf{Tabular data generation} is less popular despite its practical importance.
+    \item Tabular data is structured data organized in rows and columns, where each row is an observation and each column is a feature or attribute.
+    \bigskip
+    \input{tables/tabular_data_example.tex}
+    \bigskip
+    \item Tabular data is ubiquitous in real-world systems: financial transactions, patient records, commercial databases, etc.
+    %\item Key applications of tabular data generation: privacy preservation, data augmentation, probabilistic inference, anomaly detection.
+\end{itemize}
+
+
+
+\end{frame}
+%-----------------------------------
+
+
+%-----------------------------------
+\begin{frame}
+
+\frametitle{Applications of Tabular Data Generation}
+Key applications of tabular data generation: privacy preservation, data augmentation, probabilistic inference, anomaly detection.
+
+
+% show image in assets/images/synthetic_data_infographic.pdf
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{assets/images/synthetic_data_infographic.pdf}
+\end{center}
+
+
+
+
+\end{frame}
+%-----------------------------------
+
+
+%-----------------------------------
+\begin{frame}
+
+\frametitle{Challenges of Tabular Data Generation}
+
+\begin{itemize}
+    \item \textbf{Complex distributions}: multimodality, heavy tails, inflated values
+    \item \textbf{Intricate dependencies}: nonlinear, high-order, non-monotonic relationships
+    \item \textbf{Heterogeneous data types}: continuous, ordinal, categorical, binary, temporal
+    \item \textbf{Missing data}: cannot be trivially imputed
+    \item \textbf{Hard constraints}: physical, logical, or business rules
+    \item \textbf{Quality evaluation}: difficult to assess compared to images or text
+    \item \textbf{Privacy concerns}: avoid leaking sensitive information
+    \item \textbf{Relational data}: complex dependencies across multiple interconnected tables
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+
+
+%-----------------------------------
+\begin{frame}
+\frametitle{Limitations of Current Techniques}
+
+Despite significant progress expressiveness, several limitations remain, especially regarding flexibility:
+
+\begin{itemize}
+    \item \textbf{Constraints}: Many models cannot efficiently incorporate user-specified constraints in the generated data (known facts, partial observations, logical rules). Most existing methods require retraining or fine-tuning the model for each new constraint \citep{dhariwal2021diffusion, naderiparizi2025constrained, stoian2024realistic}.
+    \item \textbf{Probabilistic queries}: General probabilistic queries are generally not possible with most state-of-the-art models for tabular data generation: density computation, marginalization, inference under missing data, etc.
+    \item \textbf{Relational data}: Current approaches for relational data generation struggle to scale to complex multi-table datasets or require restrictive assumptions about the underlying structure \citep{solatorio2023realtabformergeneratingrealisticrelational, pang2024clavaddpm, xu2022synthetic}, leading to a trade-off between expressiveness and flexibility.
+\end{itemize}
+
+\end{frame}
+%------------------------------------
+
+%-----------------------------------
+\begin{frame}
+
+\frametitle{Contribution}
+
+\textbf{Research Questions:}
+\begin{itemize}
+    \item RQ1: Can we generate data from a pre-trained diffusion model while enforcing arbitrary user-defined logical constraints?
+    \item RQ2: Can we train tractable yet expressive generative models for tabular data?
+    \item RQ3: Can we design expressive generative models capable of generating relational data with complex structural dependencies without any implicit independence assumptions?
+\end{itemize}
+
+\bigskip
+
+\textbf{Contributions:}
+\begin{itemize}
+    \item Score-based conditional sampling under logical constraints
+    \item Flow-matching framework for relational databases with arbitrary structures
+    \item Analysis of probabilistic circuits as tractable generative models
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
