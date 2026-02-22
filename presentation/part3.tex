@@ -1,1 +1,362 @@
 \section{Tabular Data Generation with Probabilistic Circuits}
+
+
+\begin{frame}[fragile]{The Problem}
+
+    \begin{itemize}
+        \item The landscape of tabular data generation is currently dominated by deep generative models. These are often only capable of unconditionally generating data. 
+        \item In particular, the state of the art is represented by diffusion models, which often show "saturated" performance on standard benchmarks.
+        \item 
+    \end{itemize}
+
+
+    \begin{itemize}
+        \item Q1: Can we train tractable yet expressive generative models for tabular data?
+        \item Q2: Do the saturated metrics on standard benchmarks reflect the true quality of the generated data?
+    \end{itemize}
+
+    
+\end{frame}
+
+\begin{frame}[fragile]{Contribution}
+
+    \begin{enumerate}
+        \item We proposed and adaptation of probalistic circuits for tabular data generation, which are tractable models.
+        \item We evaluate the quality of the generated data on common benchmark of metrics and baselines recently used by state-of-the-art diffusion-based methods.
+        \item We analyze the limitations of current metrics and benchmarks and propose improvements. 
+    \end{enumerate}
+    
+\end{frame}
+
+
+\begin{frame}[fragile]{Probabilistic Circuits}
+
+    Probabilistic circuits (PC), a.k.a. Sum-Product Networks, are probabilistic models where the density function $p(\mathbf{x})$ is represented as a computational graph composed of three different types of nodes:
+    \begin{itemize}
+        \item \textbf{Sum nodes}: $p(\mathbf{x}) = \sum_{i} w_i p_i(\mathbf{x})$
+        
+        \item \textbf{Product nodes}: $p(\mathbf{x}) = \prod_{i} p_i(\mathbf{x})$
+        
+        \item \textbf{Input nodes}: $f_\theta(\mathbf{x})$
+    \end{itemize}
+    
+    Parameters of the model are the weights $w_i$ of the sum nodes and the parameters $\theta$ of the input nodes.
+    The structure is an hyperparameter that can be either fixed or learned from data.
+
+\end{frame}
+
+\begin{frame}[fragile]{Tractability}
+
+    We can make probabilistic circuits tractable for a wide range of inference queries by satisfying the following structural constraints:
+    \begin{itemize}
+        \item \textbf{Tractable Input Distributions}: Use input distributions that are tractable (e.g., Gaussians, Categoricals).
+        \begin{equation}
+            \text{Ex: } p(x) = \mathcal{N}(x \mid \mu, \sigma^2)
+        \end{equation}
+
+        \item \textbf{Decomposability}: Multiply only functions defined on disjoint sets of variables.
+        \begin{equation}
+            \text{Ex: } p(x_1, x_2) = a(x_1) b(x_2)
+        \end{equation}
+
+        \item \textbf{Completeness}: Only sum functions defined over identical sets of variables.
+        \begin{equation}
+            \text{Ex: } p(x_1, x_2) = w_1 a(x_1,x_2) + w_2 b(x_1, x_2)
+        \end{equation}
+
+    \end{itemize}
+
+    If weights of sum nodes are non-negative and sum to one, the circuit represents a valid probability distribution.
+    \begin{equation*}
+        \text{Example: } p(x_1, x_2) = \mathcal{N}(x_1 \mid \mu_1, \sigma^2_1) \cdot \left[ w_1 \cdot \mathcal{N}(x_2 \mid \mu_2, \sigma^2_2) + w_2 \cdot \mathcal{N}(x_2 \mid \mu_3, \sigma^2_3) \right]
+    \end{equation*}
+    
+\end{frame}
+
+
+\begin{frame}[fragile]{Tractability}
+
+    Probabilistic circuits satisfying these properties are hierarchical mixture models that allow the following inference queries to be computed in time linear in the size of the circuit:
+    \begin{itemize}
+        \item \textbf{Density Evaluation} by bottom-up evaluation of the circuit
+
+        \item \textbf{Sampling} by latent ancestral sampling
+
+        \item \textbf{Conditional Sampling} conditioned on any subset of variables
+        
+        \item \textbf{Marginalization} of any subset of variables. This is done by setting input units of marginalized variables to 1.
+
+    \end{itemize}
+
+    If weights of sum nodes are non-negative and sum to one, the circuit represents a valid probability distribution.
+    
+\end{frame}
+
+
+\begin{frame}[fragile]{Learning and Inference}
+
+    A probabilistic circuit is defined by its structure and parameters. 
+    
+    \begin{itemize}
+        \item Parameters are the weights of the sum nodes and the parameters of the input distributions. They can be learned by Maximum Likelihood Estimation (MLE) with gradient-based optimization.
+        \item Learning the structure of the circuit is a more complex problem. Often it is fixed with heuristics based on the data.
+        \item Input units are also often fixed to simple distributions (e.g., Gaussians, Categoricals).
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}[fragile]{Increasing the Expressiveness of Probabilistic Circuits}
+
+    In order to build generative models for tabular data, we need to increase the expressivity of probabilistic circuits. We can do this in several ways: 
+    
+    \begin{itemize}
+        \item \textbf{Overparameterization}: We can use a large number of parameters to increase the expressivity of the model.
+        
+        \item \textbf{Heterogeneous Input Distributions}: Adapt the input distributions to the type of each feature (e.g., Gaussians for continuous features, Categoricals for discrete features).
+
+        \item \textbf{Structure Learning}: Use structure learning algorithms to learn the structure of the circuit from data. 
+        
+    \end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}[fragile]{Overparameterization}
+
+    Units $\rightarrow$ Layers:
+    
+    \begin{itemize}
+        \item \textbf{Vectorized input layers}: For each variable use more input units of the same family of distributions.
+        \begin{equation}
+            \text{Ex: } \mathbf{p}(x) = \left\{ \mathcal{N}(x \mid \mu_1, \sigma^2_1), \ \dots, \  \mathcal{N}(x \mid \mu_k, \sigma^2_k) \right\}
+        \end{equation}
+        
+        \item \textbf{Sum-product layers}: Vectorized distributions of disjoint sets of variables are combined with sum-product layers, in particlar we use the CP layer \citep{loconte2025what}:
+        \begin{equation}
+        \mathbf{p}(\mathbf{x}) \otimes \mathbf{q}(\mathbf{y}) = \bigg ( Q_1\mathbf{p}(\mathbf{x}) \bigg ) \odot \bigg( Q_2\mathbf{q}(\mathbf{y}) \bigg) 
+        \end{equation}
+        %where $Q_1$ and $Q_2$ are matrices of non-negative weights and $\odot$ is the element-wise product.
+        Sum unit $\rightarrow$ Matrix multiplication
+
+        Product unit $\rightarrow$ Hadamard product
+
+        
+    \end{itemize}
+    
+\end{frame}
+
+\begin{frame}[fragile]{Structure Learning}
+\begin{columns}
+    \column{0.6\textwidth}
+    \begin{itemize}
+        \item The graph defining the order sets of variables are mixed together is called the region graph.
+        \item We use a method based on the Chow-Liu algorithm \citep{vergari2015simplifying,rahman2014cutset,choi2011learning} to learn the structure of the region graph from data.
+        \item The Chow-Liu algorithm is an efficient method for constructing a tree-shaped Bayesian network approximating a joint distribution, from which a dataset of samples is available.
+        \item In such a region graph, highly dependent variables are mixed together earlier.
+    \end{itemize}
+
+    \column{0.4\textwidth}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth, page=1]{assets/images/region_graphs.pdf}
+    \end{figure}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{TabPC}
+
+    We call TabPC the overparametereized PC we use for tabular data generation, which is defined by the following design choices:
+    \begin{itemize}
+        \item Gaussian input layers for numeric variables, Categorical sitrivutions for categorical variables.
+        \item CP-layer sum-prodcut units
+        \item Region graph structure learned with the Chow-Liu algorithm.
+        \item Standard preprocessing of the data.
+    \end{itemize}
+
+    The only hyperparameter of the model is the number of input units per variable and output size of the CP-layers that we both set to $K$.
+
+\end{frame}
+
+\begin{frame}[fragile]{Example}
+
+    Example of TabPC circuit built for the Magic dataset.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.45\textwidth]{assets/images/magic_graphs/circuit.pdf}
+    \end{figure}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Experiments}
+
+    We aim at comparing with state-of-the-art diffusion-based methods for tabular data generation. We run the experiments in the same settins as \citet{tabdiff}:
+
+    \begin{itemize}
+        \item \textbf{Datasets}: 6 commond datasets from the UCI machine learning repository: Adult, Beijing, Default, Diabetes, Magic, News and Shoppers.
+        \item \textbf{Baselines}:
+            \begin{itemize}
+                \item Open-source models: TVAE (VAE), CTGAN (GAN), GReaT (LLM), and STaSy, CoDi, TabDDPM, TabSyn and TabDiff (diffusion).
+                \item Fully Factorized model (FF), to understand the impact of modeling dependencies in the data.
+                \item Shallow Mixture (SM): a mixture of fully factorized models, to assess the importance of the hierarchical structure of PCs.
+            \end{itemize}
+            
+        \item \textbf{Metrics}:
+        \begin{itemize}
+            \item \textit{Fidelity} metrics: Shape (quality of marginals), Trend (quality of correlations), Detection based on logistic regression
+            \item \textit{Utility} metric: Machine Learning Efficiency (MLE);
+            \item \textit{Privacy} metric: Distance to Closest Record (DCR).
+        \end{itemize}
+    \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Results: Shape, Trend and LR-Detection}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.95\textwidth]{images/saturation_overview.pdf}
+            \end{figure}
+
+        \column{0.5\textwidth}
+            We evaluate Shape, Trend and LR-Detection metrics and report the average over the 6 datasets. All these metrics have values between 0 and 1, where 1 is the best possible score.
+
+            \begin{itemize}
+                \item recent models saturate these metrics.
+                \item With proper preprocessing, even a fully factorized model can achieve good performance on these metrics.
+            \end{itemize}
+
+    \end{columns}
+
+
+
+\end{frame}
+
+\begin{frame}[fragile]{Results: MLE}
+
+    Machine Learning Efficiency (MLE) is better at distinguishing between models.
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{assets/images/mle.pdf}
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}[fragile]{Issues with Trend and LR-Detection}
+
+    LR-Detection
+    \begin{itemize}
+        \item Logistic Regression is too easy to fool.
+        \item We prove that a synthetic dataset able to replicate the mean of each feature is neough to achieve a perfect score.
+        \item We then suggest using a more powerful classifier or an ensemble of classifiers to make the detection more robust, as done in other works.
+        In particular we propose to use an XGBoost classifier, which is both powerful and fast to evaluate.
+    \end{itemize}
+
+    Trend:
+    \begin{itemize}
+        \item We show that the Trend metric, that is supposed to only measure the quality of the correlations, is heavily influenced by the quality of marginal distributions.
+        \item We propose wNMIE (weighted Normalized Mutual Information Error) a metric that is independent on the quality of the marginals and only measures the quality of the correlations.
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{XGBoost-Detection}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.95\textwidth]{images/xgb.pdf}
+            \end{figure}
+        \column{0.5\textwidth}
+            \begin{itemize}
+                \item XGBoost better distinguishes between models.
+                %\item wNMIWE is not influenced by marginals, fully factorized models perform poorly as expected.
+                \item TabPC is competitive with state-of-the-art diffusion-based models.
+                \item TabPC still struggles for some datasets, probably due to the large number of features and high correlations.
+            \end{itemize}
+
+    \end{columns}
+
+
+\end{frame}
+
+\begin{frame}[fragile]{wNMIE}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.95\textwidth]{images/nmi.pdf}
+            \end{figure}
+
+        \column{0.5\textwidth}
+            
+            \begin{itemize}
+                \item wNMIWE is not influenced by marginals, fully factorized models perform poorly as expected.
+                \item TabPC is competitive with state-of-the-art diffusion-based models.
+            \end{itemize}
+
+    \end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Efficiency}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=1.0\textwidth]{assets/images/tabpc_overview.pdf}
+        \end{figure}
+
+        \column{0.5\textwidth}
+        \begin{itemize}
+            \item \textbf{Training time}: TabPC is significantly faster to train: $\approx 40-50 \times$ faster than TabDiff.
+            \item \textbf{Sampling time}: TabPC is also faster to sample from, $\approx 10 \times$ faster than TabDiff.
+            \item \textbf{Number of parameters}: TabPC requires more parameters, $\approx 10 \times$ more than TabDiff.
+            \item TabPC quality of generated data is close to TabDiff.
+        \end{itemize}
+
+    \end{columns}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Discussion}
+
+    \begin{itemize}
+        \item TabPC is cometitive with state-of-the-art tabular data generation models from the point of biew of quality of generated data.
+        \item TabPC is faster to train and sample from.
+        \item TabPC is tractable, allowing the \textbf{exact} computation of probabilistic queries that are not possible with other models:
+        \begin{itemize}
+            \item Conditional sampling
+            \item Marginalization (useful for handling missing data)
+            \item Density evaluation
+        \end{itemize} 
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Discussion}
+
+    Limitations:
+    \begin{itemize}
+        \item TabPC struggles when the number of features is large and there are high correlations between them.
+        \item TabPC requires more parameters.
+        \item Limited selection of datasets.
+    \end{itemize}
+
+    Future work:
+    \begin{itemize}
+        \item Explicitly include the modeling of correlations in the input layer, for example by using multivariate Gaussians.
+        \item Explore variants of PCs as Probabilistic Integral Circuits \citep{gala2024probabilistic} or Sum-of-Squares Circuits \citep{loconte2025sum}.
+        \item Explore Expectation Maximization for learning instead of MLE.
+        \item Explore more complex structures for the region graph, moving beyond Chow-Liu trees toward more general directed acyclic graphs (DAGs).
+    \end{itemize}
+
+\end{frame}
