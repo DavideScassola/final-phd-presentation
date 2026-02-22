@@ -20,17 +20,16 @@ These are the publications that form the basis of this thesis, published by the 
     % \item \cite{bortolussi2023model} \bibentry{bortolussi2023model}.
 
     % \item \cite{cornalba2024multi} \bibentry{cornalba2024multi}.
-    \item \textbf{Graph-Conditional Flow Matching for Relational Data Generation}. Scassola, Davide, Sebastiano Saccani, and Luca Bortolussi. Accepted at AAAI 2026.    
+    \item \textbf{Graph-Conditional Flow Matching for Relational Data Generation}. Scassola, Davide, Sebastiano Saccani, and Luca Bortolussi. \textcolor{blue}{Accepted at AAAI 2026}.    
 
-    \item \textbf{Zero-Shot Conditioning of Score-Based Diffusion Models by Neuro-Symbolic Constraints}. Scassola, D., S. Saccani, G. Carbone, and L. Bortolussi. Proceedings of the AAAI Conference on Artificial Intelligence (2025).
-
-    \item \textbf{Model Abstraction and Conditional Sampling with Score-Based Diffusion Models}. Bortolussi, Luca, et al. "Model Abstraction and Conditional Sampling with Score-Based Diffusion Models." International Conference on Quantitative Evaluation of Systems (2023).
+    \item \textbf{Zero-Shot Conditioning of Score-Based Diffusion Models by Neuro-Symbolic Constraints}. Scassola, D., S. Saccani, G. Carbone, and L. Bortolussi. \textcolor{blue}{Accepted at AAAI 2025}.
     
 \end{itemize}
 
-Unrelated publications:
+Other publications:
 \begin{itemize}
-    \item "Multi-objective reward generalization: improving performance of Deep Reinforcement Learning for applications in single-asset trading." Cornalba, Federico, et al. Neural Computing and Applications (2024).
+    \item \textit{"Model Abstraction and Conditional Sampling with Score-Based Diffusion Models."} Bortolussi, Luca, et al. International Conference on Quantitative Evaluation of Systems (2023).
+    \item \textit{"Multi-objective reward generalization: improving performance of Deep Reinforcement Learning for applications in single-asset trading."} Cornalba, Federico, et al. Neural Computing and Applications (2024).
 \end{itemize}
 
 
@@ -71,16 +70,15 @@ Unrelated publications:
 \begin{frame}
 
 \frametitle{Applications of Tabular Data Generation}
-Key applications of tabular data generation: privacy preservation, data augmentation, probabilistic inference, anomaly detection.
+\begin{itemize}
+    \item \textbf{Privacy preservation}: share synthetic data that mimics the statistical properties of real data without revealing sensitive information.
+    \item \textbf{Data augmentation}: create additional training data to improve the performance of machine learning models, especially in cases of class imbalance or limited data availability.
+    \item \textbf{Probabilistic inference}: perform probabilistic reasoning on the generated data, e.g., computing probabilities (anomaly detection).
+\end{itemize}
 
-
-% show image in assets/images/synthetic_data_infographic.pdf
 \begin{center}
     \includegraphics[width=0.8\textwidth]{assets/images/synthetic_data_infographic.pdf}
 \end{center}
-
-
-
 
 \end{frame}
 %-----------------------------------
@@ -113,9 +111,9 @@ Key applications of tabular data generation: privacy preservation, data augmenta
 Despite significant progress expressiveness, several limitations remain, especially regarding flexibility:
 
 \begin{itemize}
-    \item \textbf{Constraints}: Many models cannot efficiently incorporate user-specified constraints in the generated data (known facts, partial observations, logical rules). Most existing methods require retraining or fine-tuning the model for each new constraint \citep{dhariwal2021diffusion, naderiparizi2025constrained, stoian2024realistic}.
+    \item \textbf{Constraints}: Many models cannot efficiently incorporate user-specified constraints in the generated data (known facts, partial observations, logical rules). Most existing methods require retraining or fine-tuning the model for each new constraint.
+    \item \textbf{Relational data}: Current approaches for relational data generation struggle to scale to complex multi-table datasets or require restrictive assumptions about the underlying structure, leading to a trade-off between expressiveness and flexibility.
     \item \textbf{Probabilistic queries}: General probabilistic queries are generally not possible with most state-of-the-art models for tabular data generation: density computation, marginalization, inference under missing data, etc.
-    \item \textbf{Relational data}: Current approaches for relational data generation struggle to scale to complex multi-table datasets or require restrictive assumptions about the underlying structure \citep{solatorio2023realtabformergeneratingrealisticrelational, pang2024clavaddpm, xu2022synthetic}, leading to a trade-off between expressiveness and flexibility.
 \end{itemize}
 
 \end{frame}
@@ -128,9 +126,9 @@ Despite significant progress expressiveness, several limitations remain, especia
 
 \textbf{Research Questions:}
 \begin{itemize}
-    \item RQ1: Can we generate data from a pre-trained diffusion model while enforcing arbitrary user-defined logical constraints?
-    \item RQ2: Can we design expressive generative models capable of generating relational data with complex structural dependencies without any implicit independence assumptions?
-    \item RQ3: Can we train tractable yet expressive generative models for tabular data?
+    \item \textbf{Q1}: Can we generate data from a pre-trained diffusion model while enforcing arbitrary user-defined logical constraints?
+    \item \textbf{Q2}: Can we design expressive generative models capable of generating relational data with complex structural dependencies without any implicit independence assumptions?
+    \item \textbf{Q3}: Can we train tractable yet expressive generative models for tabular data?
 \end{itemize}
 
 \bigskip
