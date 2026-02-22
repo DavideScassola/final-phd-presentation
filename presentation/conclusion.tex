@@ -1,3 +1,25 @@
+\section{Conclusion}
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Summary: Thesis Goals}
+  \begin{itemize}
+    \item Recent progress: diffusion-like models for tabular data yield high fidelity and empitical evidence of privacy protection.
+    \item Key limitations: limited conditional flexibility, intractable probabilistic queries, and immature relational data generation.
+    \item Thesis goal: address these limitations with tractable, flexible, and relationally-aware generative modeling.
+  \end{itemize}
+\end{frame}
+% -------------------------------------------------------------------------------------
+
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Summary: Methods and Findings}
+  \begin{enumerate}
+    \item \textbf{Training-free conditioning}: Training-free conditional sampling with logical constraints for score-based models $\rightarrow$ strong results but challenges with complex/high-dimensional constraints.
+    \item \textbf{Graph-Conditional flow matching for relational data generation}: Flow-matching model for relational data conditioned on arbitrary database graphs $\rightarrow$ improved expressiveness and fidelity.
+    \item \textbf{TabPC}: Overparametrized probabilistic circuits for tabular data $\rightarrow$ competitive fidelity, exact probabilistic queries and faster training/sampling.
+  \end{enumerate}
+\end{frame}
+% -------------------------------------------------------------------------------------
+
 % -------------------------------------------------------------------------------------
 %{\setbeamercolor{palette primary}{fg=black, bg=yellow}
 \begin{frame}[standout]
