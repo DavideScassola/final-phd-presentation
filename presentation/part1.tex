@@ -39,76 +39,103 @@
 
 
 
-%-----------------------------------
-\begin{frame}
+% %-----------------------------------
+% \begin{frame}
 
-\frametitle{Background: Score Based Diffusion Models}
+% \frametitle{Background: Score Based Diffusion Models}
 
-Objective: sample from the distribution $p(\myvec{x})$ that generated the data
+% Objective: sample from the distribution $p(\myvec{x})$ that generated the data
 
-Method:
-\begin{enumerate}
+% Method:
+% \begin{enumerate}
 
-    \item Define a diffusion process $p(\myvec{x}_t | \myvec{x}_0)$ that gradually adds noise to clean data points $\myvec{x}_0$ until pure noise is reached (as a standard Gaussian).
+%     \item Define a diffusion process $p(\myvec{x}_t | \myvec{x}_0)$ that gradually adds noise to clean data points $\myvec{x}_0$ until pure noise is reached (as a standard Gaussian).
 
-    \begin{figure}[htbp!] 
-    \centering    
-    \includegraphics[width=0.9\textwidth]{assets/images/passaggio_anno/forward_diffusion_process.png}
-    \end{figure}
+%     \begin{figure}[htbp!] 
+%     \centering    
+%     \includegraphics[width=0.9\textwidth]{assets/images/passaggio_anno/forward_diffusion_process.png}
+%     \end{figure}
     
-\end{enumerate}
+% \end{enumerate}
 
 
-\end{frame}
-%-----------------------------------
+% \end{frame}
+% %-----------------------------------
 
 
 
-%-----------------------------------
-\begin{frame}
+% %-----------------------------------
+% \begin{frame}
 
-\frametitle{Background: Score Based Diffusion Models}
+% \frametitle{Background: Score Based Diffusion Models}
 
 
-\begin{enumerate}
+% \begin{enumerate}
 
-\setcounter{enumi}{1}
-    \item Learn the noise-dependent score: $\myvec{s}(\myvec{x}_t,t) := \nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t)}$.
+% \setcounter{enumi}{1}
+%     \item Learn the noise-dependent score: $\myvec{s}(\myvec{x}_t,t) := \nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t)}$.
 
-    The most popular method for estimating the score is \textbf{denoising score matching}: it uses corrupted data samples in order to estimate the score of the distribution for different levels of added noise, using a denoising neural network. %which is in practice necessary for sampling in high dimensional spaces \cite{song2019generative}. 
-    $$\mathbb{E}_{t\sim u(0,1), \myvec{x}_0 \sim p(\myvec{x}_0), \myvec{x}_t \sim p(\myvec{x}_t|\myvec{x}_0)} \norm{\myvec{s}_\theta(\myvec{x}_t,t) - \nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t | \myvec{x}_0)}}$$
+%     The most popular method for estimating the score is \textbf{denoising score matching}: it uses corrupted data samples in order to estimate the score of the distribution for different levels of added noise, using a denoising neural network. %which is in practice necessary for sampling in high dimensional spaces \cite{song2019generative}. 
+%     $$\mathbb{E}_{t\sim u(0,1), \myvec{x}_0 \sim p(\myvec{x}_0), \myvec{x}_t \sim p(\myvec{x}_t|\myvec{x}_0)} \norm{\myvec{s}_\theta(\myvec{x}_t,t) - \nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t | \myvec{x}_0)}}$$
 
-    After training: $\myvec{s}_\theta(\myvec{x}_t,t) \approx \nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t)}$
+%     After training: $\myvec{s}_\theta(\myvec{x}_t,t) \approx \nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t)}$
         
     
-    \begin{figure}[htbp!]
-    \centering    
-    \includegraphics[width=0.3\textwidth]{assets/images/passaggio_anno/score.png}
-    \end{figure}
+%     \begin{figure}[htbp!]
+%     \centering    
+%     \includegraphics[width=0.3\textwidth]{assets/images/passaggio_anno/score.png}
+%     \end{figure}
     
-\end{enumerate}
+% \end{enumerate}
 
-\end{frame}
-%-----------------------------------
+% \end{frame}
+% %-----------------------------------
 
 
+
+% %-----------------------------------
+% \begin{frame}
+
+% \frametitle{Background: Score Based Diffusion Models}
+
+% \begin{enumerate}
+
+% \setcounter{enumi}{2}
+%     \item Use any sampling technique that uses the score to reverse the diffusion process, as annealed Langevin dynamics (\cite{song2019generative}), denoising diffusion probabilistic models (\cite{ho2020denoising}) or stochastic differential equations (\cite{sde}).
+
+%     \begin{figure}[htbp!] 
+%     \centering    
+%     \includegraphics[width=0.75\textwidth]{assets/images/passaggio_anno/sde.png}
+%     \end{figure}
+    
+% \end{enumerate}
+
+% \end{frame}
+% %-----------------------------------
 
 %-----------------------------------
 \begin{frame}
 
 \frametitle{Background: Score Based Diffusion Models}
 
+Objective: sample from the distribution $p(\mathbf{x})$ that generated the data
+
 \begin{enumerate}
 
-\setcounter{enumi}{2}
-    \item Use any sampling technique that uses the score to reverse the diffusion process, as annealed Langevin dynamics (\cite{song2019generative}), denoising diffusion probabilistic models (\cite{ho2020denoising}) or stochastic differential equations (\cite{sde}).
+    \item Define a diffusion process $p(\mathbf{x}_t | \mathbf{x}_0)$ that gradually adds noise to clean data points $\mathbf{x}_0$ until pure noise is reached (as a standard Gaussian).
+
+    \item Learn the noise-dependent score: $\mathbf{s}(\mathbf{x}_t,t) := \nabla_{\mathbf{x}_t} \ln{p(\mathbf{x}_t)}$, for example, by \textbf{denoising score matching}.
+
+    \item Run a sampling technique that uses the score to sample new points by reversing the diffusion process.
 
     \begin{figure}[htbp!] 
     \centering    
-    \includegraphics[width=0.75\textwidth]{assets/images/passaggio_anno/sde.png}
+    \includegraphics[width=0.6\textwidth]{assets/images/passaggio_anno/sde.png}
     \end{figure}
-    
+
+
 \end{enumerate}
+
 
 \end{frame}
 %-----------------------------------
@@ -155,7 +182,7 @@ Given a joint distribution $p(\myvec{x}, \myvec{y})$, one is often interested in
 
 \begin{frame} %-----------------------------------
 
-\frametitle{Problem formalization}
+\frametitle{Problem Formalization}
 
 \begin{itemize}[<+->]
     \item Problem: Given the unconditional score $\nabla_{\myvec{x}_t} \ln p(\myvec{x}_t)$ and a logical constraint $\pi(\myvec{x}): \mathbb{R}^d \rightarrow \{0,1\}$, sample from 
@@ -244,7 +271,7 @@ In order to sample from the target $p_c(\myvec{x}) \propto p(\myvec{x})e^{c(\myv
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Conditional score approximation}
+\frametitle{Conditional Score Approximation}
 
 \begin{itemize}
 %     \item Given this limit, we resort to approximations $\tilde{\myvec{s}}_c(\myvec{x}_t, t)$ for $\nabla_{\myvec{x}_t} \ln{p_c(\myvec{x}_t)}$, knowing the true value of the score for $t=0$ and $t=1$:
@@ -371,7 +398,7 @@ where $g(t): [0,1] \rightarrow [0,1]$ satisfies $g(0) = 1$ and $g(1) = 0$.
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Neuro-symbolic logical constraints}
+\frametitle{Neuro-Symbolic Logical Constraints}
 
 \begin{itemize}
     \item Every atomic predicate and logical connector is associated to a differentiable function (similar to \cite{Badreddine2023logLTNDF}):
@@ -390,6 +417,15 @@ where $g(t): [0,1] \rightarrow [0,1]$ satisfies $g(0) = 1$ and $g(1) = 0$.
 NNF (De Morgan's laws), numerical stability, tunable hardness ($k$).
 \end{itemize}
 
+\end{frame} %-----------------------------------
+
+
+\begin{frame} %-----------------------------------
+\frametitle{Neuro-Symbolic Logical Constraints}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{assets/images/log_probabilistic_functions.pdf}
+    \end{figure}
 \end{frame} %-----------------------------------
 
 
@@ -445,8 +481,7 @@ NNF (De Morgan's laws), numerical stability, tunable hardness ($k$).
 
 \end{enumerate}
 
-Notice that this method doesn't require any training!
-
+No training required!
 
 \end{frame}
 %-----------------------------------
@@ -460,7 +495,7 @@ Notice that this method doesn't require any training!
     \item Metrics for comparing two samples $X$ and $Y$:
     \begin{itemize}
         \item Average l1 distance in correlation coefficients.
-        \item Total variation distance: $ D(X,Y):=\frac{1}{2} \sum_i |x_i - y_i|$ where $x_i$ and $y_i$ are the empirical probabilities for a given common binning. This distance is upper bounded by 1. Intuitively, it's the area of each of the two histograms that is not shared.
+        \item Total variation distance: $ D(X,Y):=\frac{1}{2} \sum_i |x_i - y_i|$ where $x_i$ and $y_i$ are the empirical probabilities for a given common binning. This distance is upper bounded by 1. Intuitively, it is the area of each of the two histograms that is not shared.
     \end{itemize}
     %\item Pre-trained unconditional models were used when possible, otherwise they were trained using SDEs. 
     %\item Comparison with \cite{bansal2023universal}
@@ -470,12 +505,12 @@ Notice that this method doesn't require any training!
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Experiments: tabular data}
+\frametitle{Experiments: Tabular Data}
 
 Datasets:
 \begin{itemize}
     \item White wine dataset (\cite{misc_wine_quality_186}): 11 numerical dimensions ($\mathbb{R}^{11}$).
-    \item Adult (\cite{misc_adult_2}): 5 numerical and 10 categorical dimensions.
+    \item Adult (\cite{dataset_adult}): 5 numerical and 10 categorical dimensions.
 \end{itemize}
 
 Unconditional score-based model are trained using SDEs (\cite{sde}). Categorical variables were embedded in continuous space using one-hot encodings.
@@ -484,7 +519,7 @@ Unconditional score-based model are trained using SDEs (\cite{sde}). Categorical
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Experiments: tabular data}
+\frametitle{Experiments: Tabular Data}
 
 \begin{enumerate}
     \item White wine, \texttt{$(\text{fixed acidity} \in [5.0, 6.0]  \lor  \text{fixed acidity} \in [8.0, 9.0]) \land \text{alcohol} \geq 11.0 \land (\text{residual sugar} \leq 5.0 \rightarrow \text{citric acid} \geq 0.5)$}
@@ -501,7 +536,7 @@ Unconditional score-based model are trained using SDEs (\cite{sde}). Categorical
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Experiments: tabular data}
+\frametitle{Experiments: Tabular Data}
 
 \begin{enumerate}
 \setcounter{enumi}{1}
@@ -569,7 +604,7 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Experiments: time series}
+\frametitle{Experiments: Time Series}
     
     Dataset: Simulated eSIRS time series (spreading of a disease in an open population). Fixed population of size $N$ composed of Susceptible ($S$), Infected ($I$), and Recovered ($R$) individuals.
 
@@ -603,7 +638,7 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Experiments: images}
+\frametitle{Experiments: Images}
 
 \begin{itemize}[<+->]
 
@@ -627,7 +662,7 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Experiments: images}
+\frametitle{Experiments: Images}
 
 \begin{itemize}[<+->]
 
@@ -648,7 +683,7 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Experiments: images}
+\frametitle{Experiments: Images}
 
 \begin{itemize}[<+->]
 
@@ -677,24 +712,17 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 \begin{itemize}
     \item Universal Guidance (\cite{bansal2023universal}) is probably the state of the art for plug-and-play conditioning.
 
-    \item Originally applied to imaging problems.
+    \item Originally applied to imaging problems
+    
+    \item Synthesis of previous optimization-based approaches for solving inverse problems with diffusion models
 
     \item Oversimplifying, it involves at each time step an optimization of the denoising prediction $\myvec{x}_0$ (that is a linear transformation of the score), in order to make it satisfy the constraint $c(\myvec{x}_0)$.
+    \bigskip
 
-    
-    \item It fails in two of the tasks we tested:
-
-    \begin{table}[ht]
-    
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-\multicolumn{1}{c}{\multirow{2}{*}{Method}} & \multicolumn{2}{c}{White wine} & \multicolumn{2}{c}{eSIRS bridging} \\ \cmidrule(l){2-5} 
-\multicolumn{1}{c}{} & \textbf{Avg TV} & \textbf{Max TV} & \textbf{Avg TV} & \textbf{Max TV} \\ \midrule
-\textbf{Ours}        & \textbf{0.1}    & \textbf{0.15}  & \textbf{0.13}  & \textbf{0.25}  \\
-Univ. Guidance                   & 0.29           & 0.85           & 0.47           & 1.0             \\ \bottomrule
-\end{tabular}
-%\caption{Comparison with Universal Guidance. On the first white wine and eSIRS bridging tasks our method performs significantly better in terms of Total variation distance (we report average and maximum distance over the marginals).}\label{tab:universal_guidance_comparison_short}
-\end{table}
+    \begin{figure} 
+    \centering    
+    \includegraphics[width=0.5\textwidth]{assets/images/universal_guidance_cartoon.pdf}
+    \end{figure}
 
 \end{itemize}
 
@@ -702,7 +730,32 @@ Univ. Guidance                   & 0.29           & 0.85           & 0.47       
 
 
 \begin{frame} %-----------------------------------
-\frametitle{Experiments: comparison with Universal Guidance}
+\frametitle{Comparison with Universal Guidance}
+
+Universal guidance fails in two of the tasks we tested (White wine and eSIRS bridging).
+
+    \bigskip
+
+    \begin{figure} 
+    \centering    
+    \includegraphics[width=0.6\textwidth]{assets/images/white_wine_fw_bw.pdf}
+    \end{figure}
+
+    % \begin{table}[ht]    
+    % \begin{tabular}{@{}lcccc@{}}
+    % \toprule
+    % \multicolumn{1}{c}{\multirow{2}{*}{Method}} & \multicolumn{2}{c}{White wine} & \multicolumn{2}{c}{eSIRS bridging} \\ \cmidrule(l){2-5} 
+    % \multicolumn{1}{c}{} & \textbf{Avg TV} & \textbf{Max TV} & \textbf{Avg TV} & \textbf{Max TV} \\ \midrule
+    % \textbf{Ours}        & \textbf{0.1}    & \textbf{0.15}  & \textbf{0.13}  & \textbf{0.25}  \\
+    % Univ. Guidance                   & 0.29           & 0.85           & 0.47           & 1.0             \\ \bottomrule
+    % \end{tabular}
+    % \end{table}
+
+\end{frame} %-----------------------------------
+
+
+\begin{frame} %-----------------------------------
+\frametitle{Comparison with Universal Guidance}
 
 \begin{itemize}
 
@@ -725,15 +778,17 @@ Univ. Guidance                   & 0.29           & 0.85           & 0.47       
 \begin{frame} %-----------------------------------
 \frametitle{Discussion}
 
-\begin{itemize}[<+->]
+\textbf{Contributions}
+\begin{itemize}
+    \item We developed a method for training-free conditional distribution approximation with logical constraints, that can be applied to any pre-trained score-based diffusion model.
+    \item Our method is performs well on training-free conditional distribution approximation on tabular data with logical constraints.
+\end{itemize}
 
-    \item Our method is SOTA for zero-shot conditional distribution approximation on tabular data with logical constraints.
+\textbf{Limitations}
+\begin{itemize}
+    \item As complexity increases, it is necessary to trade-off constraint satisfaction with samples quality.
 
-    \item Nevertheless, as complexity increases, it is necessary to trade-off constraint satisfaction with samples quality.
-
-    \item When it is more important to obtain high quality samples, rather than approximating the true conditional distribution, other methods are to be preferred.
-    
-    \item Conditional score approximation can be improved, by taking inspiration from recent zero-shot methods for images, but fixing the problem with optimization.
+    \item Prefer optimization-based methods when it is more important to obtain high quality samples, rather than approximating the true conditional distribution.
     
 \end{itemize}
 
