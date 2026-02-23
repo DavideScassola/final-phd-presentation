@@ -1,0 +1,97 @@
+method,dataset,mean,std
+CTGAN,Adult,1.559,0.056
+CTGAN,Beijing,1.975,0.056
+CTGAN,Default,2.171,0.068
+CTGAN,Diabetes,6.18,0.263
+CTGAN,Magic,0.917,0.03
+CTGAN,News,4.03,0.437
+CTGAN,Shoppers,0.855,0.032
+CTGAN,Average,2.527,
+TVAE,Adult,0.948,0.028
+TVAE,Beijing,1.36,0.039
+TVAE,Default,1.589,0.03
+TVAE,Diabetes,4.259,0.152
+TVAE,Magic,0.577,0.027
+TVAE,News,2.973,0.073
+TVAE,Shoppers,0.572,0.015
+TVAE,Average,1.754,
+GReaT,Adult,343.95,4.762
+GReaT,Beijing,230.25,1.713
+GReaT,Default,529.9,1.774
+GReaT,Diabetes,,
+GReaT,Magic,101.25,0.444
+GReaT,News,,
+GReaT,Shoppers,104.5,0.607
+GReaT,Average,261.97,
+STaSy,Adult,14.765,10.594
+STaSy,Beijing,13.43,1.6
+STaSy,Default,11.43,2.772
+STaSy,Diabetes,,
+STaSy,Magic,5.583,2.108
+STaSy,News,13.9,3.275
+STaSy,Shoppers,15.325,37.41
+STaSy,Average,366.039,
+CoDi,Adult,9.85,0.592
+CoDi,Beijing,10.356,0.477
+CoDi,Default,8.013,0.527
+CoDi,Diabetes,652.005,7.312
+CoDi,Magic,4.086,0.233
+CoDi,News,9.442,0.58
+CoDi,Shoppers,3.628,0.268
+CoDi,Average,99.626,
+TabDDPM,Adult,72.08,2.903
+TabDDPM,Beijing,67.241,1.734
+TabDDPM,Default,54.917,2.154
+TabDDPM,Diabetes,278.74,5.711
+TabDDPM,Magic,31.821,0.76
+TabDDPM,News,64.059,1.371
+TabDDPM,Shoppers,35.003,1.354
+TabDDPM,Average,86.266,
+TabSyn,Adult,5.474,0.365
+TabSyn,Beijing,5.835,0.31
+TabSyn,Default,5.751,0.532
+TabSyn,Diabetes,16.9,1.726
+TabSyn,Magic,2.861,0.193
+TabSyn,News,12.272,1.43
+TabSyn,Shoppers,2.233,0.185
+TabSyn,Average,7.332,
+TabDiff,Adult,11.141,0.442
+TabDiff,Beijing,8.791,0.315
+TabDiff,Default,9.346,0.231
+TabDiff,Diabetes,195.646,9.661
+TabDiff,Magic,3.83,0.119
+TabDiff,News,15.724,0.178
+TabDiff,Shoppers,5.577,0.16
+TabDiff,Average,35.722,
+Fully Factorized,Adult,0.623,0.018
+Fully Factorized,Beijing,0.668,0.004
+Fully Factorized,Default,1.135,0.005
+Fully Factorized,Diabetes,1.455,0.016
+Fully Factorized,Magic,0.293,0.002
+Fully Factorized,News,3.512,0.095
+Fully Factorized,Shoppers,0.302,0.002
+Fully Factorized,Average,1.141,
+Fully Factorized (P),Adult,0.618,0.008
+Fully Factorized (P),Beijing,0.647,0.01
+Fully Factorized (P),Default,1.187,0.021
+Fully Factorized (P),Diabetes,1.407,0.01
+Fully Factorized (P),Magic,0.296,0.002
+Fully Factorized (P),News,3.787,0.014
+Fully Factorized (P),Shoppers,0.293,0.002
+Fully Factorized (P),Average,1.176,
+ShallowMixture,Adult,4.245,0.14
+ShallowMixture,Beijing,8.881,0.041
+ShallowMixture,Default,5.902,0.957
+ShallowMixture,Diabetes,17.672,0.144
+ShallowMixture,Magic,1.684,0.742
+ShallowMixture,News,10.94,0.179
+ShallowMixture,Shoppers,2.937,0.718
+ShallowMixture,Average,7.466,
+TabPC,Adult,3.159,0.038
+TabPC,Beijing,1.483,0.004
+TabPC,Default,2.839,0.014
+TabPC,Diabetes,7.875,0.128
+TabPC,Magic,0.605,0.003
+TabPC,News,6.568,0.012
+TabPC,Shoppers,0.869,0.01
+TabPC,Average,3.342,
