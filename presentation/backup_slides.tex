@@ -1,3 +1,87 @@
+\begin{frame} %-----------------------------------
+\frametitle{Experiments: Images}
+
+
+    MNIST digits sum: \textit{"Sample two MNIST images whose digit labels sum up to 10"}
+
+    $$\bigvee_{i=1}^{9} \text{{class}}(\myvec{x}, i) \land \text{{class}}(\myvec{y}, 10-i) $$
+
+        Where "class" is a pretrained classifier.
+
+
+    \begin{figure}[htbp!] 
+    \centering    
+    \includegraphics[width=0.8\textwidth]{assets/images/passaggio_anno/mnist_digits_sum.png}
+    \end{figure}
+
+
+    According to the classifier $\approx 96\%$ of pairs sum up to 10, but only 2-8, 6-4 pairs are generated.
+
+\end{frame} %-----------------------------------
+
+\begin{frame} %-----------------------------------
+\frametitle{Comparison with Universal Guidance}
+
+\begin{itemize}
+    \item Universal Guidance (\cite{bansal2023universal}) is probably the state of the art for plug-and-play conditioning.
+
+    \item Originally applied to imaging problems
+    
+    \item Synthesis of previous optimization-based approaches for solving inverse problems with diffusion models
+
+    \item Oversimplifying, it involves at each time step an optimization of the denoising prediction $\myvec{x}_0$ (that is a linear transformation of the score), in order to make it satisfy the constraint $c(\myvec{x}_0)$.
+    \bigskip
+
+    \begin{figure} 
+    \centering    
+    \includegraphics[width=0.5\textwidth]{assets/images/universal_guidance_cartoon.pdf}
+    \end{figure}
+
+\end{itemize}
+
+\end{frame} %-----------------------------------
+
+
+\begin{frame} %-----------------------------------
+\frametitle{Comparison with Universal Guidance}
+
+Universal guidance fails in two of the tasks we tested (White wine and eSIRS bridging). However, it performs better on one of the tasks based on images.
+
+    \bigskip
+
+    % \begin{figure} 
+    % \centering    
+    % \includegraphics[width=0.5\textwidth]{assets/images/white_wine_fw_bw.pdf}
+    % \end{figure}
+
+    \begin{table}[ht]    
+    \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    \multicolumn{1}{c}{\multirow{2}{*}{Method}} & \multicolumn{2}{c}{White wine} & \multicolumn{2}{c}{eSIRS bridging} \\ \cmidrule(l){2-5} 
+    \multicolumn{1}{c}{} & \textbf{Avg TV} & \textbf{Max TV} & \textbf{Avg TV} & \textbf{Max TV} \\ \midrule
+    \textbf{Ours}        & \textbf{0.1}    & \textbf{0.15}  & \textbf{0.13}  & \textbf{0.25}  \\
+    Univ. Guidance                   & 0.29           & 0.85           & 0.47           & 1.0             \\ \bottomrule
+    \end{tabular}
+    \end{table}
+
+\end{frame} %-----------------------------------
+
+\begin{frame} %-----------------------------------
+\frametitle{Comparison with Universal Guidance}
+
+    Universal Guidance performs better on image problems:
+    $$\bigvee_{i=1}^{9} \text{{class}}(\myvec{x}, i) \land \text{{class}}(\myvec{y}, 10-i) $$
+
+    \begin{figure}[htbp!] 
+    \centering    
+    \includegraphics[width=0.8\textwidth]{assets/images/passaggio_anno/mnist_digits_sum_universal_guidance.png}
+    \end{figure}
+
+    It is able to generate high quality samples but it misses the correct approximation of the conditional distribution, probably because it involves an optimization phase.  
+
+
+\end{frame} %-----------------------------------
+
 
 % -------------------------------------------------------------------------------------
 \begin{frame}[fragile]{Datasets Details (1)}
@@ -197,3 +281,59 @@ Walmart               & $1$m $48$s \\
 
 \end{frame}
 % -------------------------------------------------------------------------------------
+
+
+\begin{frame}[fragile]{wNMIE}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=1.00\textwidth]{images/nmi.pdf}
+            \end{figure}
+
+        \column{0.5\textwidth}
+            
+            \begin{itemize}
+                \item wNMIWE is not influenced by marginals, fully factorized models perform poorly as expected.
+                \item TabPC is competitive with state-of-the-art diffusion-based models.
+            \end{itemize}
+
+    \end{columns}
+
+\end{frame}
+
+
+% -------------------------------------------------------------------------------------
+
+\begin{frame}[fragile]{TabPC: DCR experiment}
+  
+  \input{tables/dcr002.tex}
+
+\end{frame}
+
+% ------------------------------------------------------------
+
+\begin{frame}[fragile]{TabPC: Datasets Details}
+  
+\begin{table}[ht]
+    \centering
+    \caption{Dataset statistics. \# Num = number of numerical columns, \# Cat = number of categorical columns, \# Max Cat = max categories in any categorical column. \# Train and \# Test refer to the number of samples in the training and test splits respectively.}
+    \label{tbl:exp-dataset}
+    \small
+    \begin{tabular}{lrrrrrrl}
+        \toprule
+        \textbf{Dataset} & \textbf{\# Rows} & \textbf{\# Num} & \textbf{\# Cat} & \textbf{\# Max Cat} & \textbf{\# Train} & \textbf{\# Test} & \textbf{Task} \\
+        \midrule
+        Adult     & $48,842$  & $6$  & $9$  & $42$  & $32,561$ & $16,281$ & Classification \\
+        Default   & $30,000$  & $14$ & $11$ & $11$  & $27,000$ & $3,000$  & Classification \\
+        Shoppers  & $12,330$  & $10$ & $8$  & $20$  & $11,097$ & $1,233$  & Classification \\
+        Magic     & $19,019$  & $10$ & $1$  & $2$   & $17,117$ & $1,902$  & Classification \\
+        Beijing   & $43,824$  & $7$  & $5$  & $31$  & $39,441$ & $4,383$  & Regression     \\
+        News      & $39,644$  & $46$ & $2$  & $7$   & $35,679$ & $3,965$  & Regression     \\
+        Diabetes  & $101,766$ & $9$  & $27$ & $716$ & $81,412$ & $20,354$ & Classification \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\end{frame}

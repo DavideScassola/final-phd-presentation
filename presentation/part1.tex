@@ -6,16 +6,13 @@
 
 \frametitle{Controlling Generative Models}
 
-\begin{itemize}[<+->]
-    \item A relevant problem in generative models is to efficiently achieve conditional generation forcing user defined logical constraints on generated samples.
+    A relevant problem in generative models is to efficiently achieve conditional generation forcing user defined logical constraints on generated samples.
 
     \begin{itemize}
-        \item Example: \textit{"Given a model for tabular data with fields $(x_1,x_2,x_3)$, generate entries such that $x_1>x_2 \land x_3 = 2$"}
-        \item Example: \textit{"Given a MNIST model, generate digits that satisfy horizontal symmetry"}
+        \item Example: \textit{"Given a generative model for tabular data with 3 fields $p(x_1,x_2,x_3)$, sample from $p(x_1, x_2, x_3 \mid x_1>x_2 \land x_3 = 2)$"}
+        \item Example: \textit{"Given a generative model for MNIST images of digits, generate digits that satisfy horizontal symmetry"}
     \end{itemize}
             
-\end{itemize}
-
 \end{frame}
 %-----------------------------------
 
@@ -27,10 +24,11 @@
 \textbf{Contribution}:
 
 \begin{itemize}
-    \item Method for sampling conditioning on logical constraints using unconditional pre-trained score-based generative models, without additional training
+    \item We develop a method for sampling conditioning on logical constraints using unconditional pre-trained score-based generative models, without additional training
 
-    \item Focus on approximating the true conditional distribution, rather than finding high likelihood samples
-    \item General method but focus on tabular data
+    \item The objective is to approximate the true conditional distribution, rather than just finding high likelihood samples
+
+    \item General method, but focus on tabular data
 \end{itemize}
 
 \end{frame}
@@ -118,7 +116,7 @@
 
 \frametitle{Background: Score Based Diffusion Models}
 
-Objective: sample from the distribution $p(\mathbf{x})$ that generated the data
+Objective: generate new samples from the distribution $p(\mathbf{x})$ that generated the data
 
 \begin{enumerate}
 
@@ -163,9 +161,9 @@ Objective: sample from the distribution $p(\mathbf{x})$ that generated the data
 
 \frametitle{Background: Conditional Generation}
 
-Given a joint distribution $p(\myvec{x}, \myvec{y})$, one is often interested in sampling from the conditional distribution $p(\myvec{x} | \myvec{y})$, where $\myvec{y}$ is for example a label. \pause
+Given a joint distribution $p(\myvec{x}, \myvec{y})$, one is often interested in sampling from the conditional distribution $p(\myvec{x} | \myvec{y})$, where $\myvec{y}$ is for example a label. %\pause
 
-\begin{itemize}[<+->]
+\begin{itemize}%[<+->]
 
     \item Main approach: train a conditional score $\nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t | \myvec{y})}$
 
@@ -184,8 +182,8 @@ Given a joint distribution $p(\myvec{x}, \myvec{y})$, one is often interested in
 
 \frametitle{Problem Formalization}
 
-\begin{itemize}[<+->]
-    \item Problem: Given the unconditional score $\nabla_{\myvec{x}_t} \ln p(\myvec{x}_t)$ and a logical constraint $\pi(\myvec{x}): \mathbb{R}^d \rightarrow \{0,1\}$, sample from 
+\begin{itemize}%[<+->]
+    \item \textbf{Problem}: Given the unconditional score $\nabla_{\myvec{x}_t} \ln p(\myvec{x}_t)$ and a logical constraint $\pi(\myvec{x}): \mathbb{R}^d \rightarrow \{0,1\}$, sample from 
 
 $$ p(\myvec{x} | \pi) \propto p(\myvec{x})\pi(\myvec{x})$$
 
@@ -252,14 +250,14 @@ $$ p(\myvec{x} | \pi) \propto p(\myvec{x})\pi(\myvec{x})$$
 
 In order to sample from the target $p_c(\myvec{x}) \propto p(\myvec{x})e^{c(\myvec{x})}$, we need the conditional noise-dependent score $\nabla_{\myvec{x}_t} \ln{p_c(\myvec{x}_t)}$:
 
-\pause
+%\pause
 
-\begin{itemize}[<+->]
+\begin{itemize}%[<+->]
     %\item At $t=0$ (no noise) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} = \nabla_{\myvec{x}} \ln{p_c(\myvec{x})} = \nabla_{\myvec{x}} \ln{\frac{p(\myvec{x})e^{c(\myvec{x})}}{Z}}$$
 %$$= \nabla_{\myvec{x}} [\ln{p(\myvec{x})} + c(\myvec{x}) - \ln{Z}] = \nabla_{\myvec{x}} \ln{p(\myvec{x})} + \nabla_{\myvec{x}} c(\myvec{x})$$
 
 
-    \item At $t=0$ (no noise) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} = \nabla_{\myvec{x}} \ln{\frac{p(\myvec{x})e^{c(\myvec{x})}}{Z}} = \nabla_{\myvec{x}} \ln{p(\myvec{x})} + \nabla_{\myvec{x}} c(\myvec{x})$$
+    \item At $t=0$ (no noise) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} =\nabla_{\myvec{x}} \ln{p(\myvec{x})} + \nabla_{\myvec{x}} c(\myvec{x})$$
     
     \item At $t=1$ (only noise) one can assume $\nabla_{\myvec{x}_1} \ln{p_c(\myvec{x}_1)} = \nabla_{\myvec{x}_1} \ln{p(\myvec{x}_1)}$, since enough noise is added to make samples from $p_c(\myvec{x}_1)$ distributed as the prior.
     
@@ -273,58 +271,20 @@ In order to sample from the target $p_c(\myvec{x}) \propto p(\myvec{x})e^{c(\myv
 \begin{frame} %-----------------------------------
 \frametitle{Conditional Score Approximation}
 
-\begin{itemize}
-%     \item Given this limit, we resort to approximations $\tilde{\myvec{s}}_c(\myvec{x}_t, t)$ for $\nabla_{\myvec{x}_t} \ln{p_c(\myvec{x}_t)}$, knowing the true value of the score for $t=0$ and $t=1$:
-% \begin{align}
-%     \tilde{\myvec{s}}_c(\myvec{x}_0, 0) &= \myvec{s}(\myvec{x}_0, 0) + \nabla_{\myvec{x}_0} c(\myvec{x}_0) \\
-%     \tilde{\myvec{s}}_c(\myvec{x}_1, 1) &= \myvec{s}(\myvec{x}_1, 1)
-% \end{align}
-
-    \item We can obtain an approximation by interpolating the two regimes:
+We can obtain an approximation by interpolating the two regimes:
 $$\tilde{\myvec{s}}_c(\myvec{x}_t, t) = \nabla_{\myvec{x}_t} \ln p(\myvec{x}_t) + g(t) \nabla_{\myvec{x}_t} c(\myvec{x}_t)$$
 where $g(t): [0,1] \rightarrow [0,1]$ satisfies $g(0) = 1$ and $g(1) = 0$.
 
-    %\item Sampling from the target distribution then reduces to substituting the score of the base model with the modified score $\tilde{\myvec{s}}_c(\myvec{x}_t, t)$.
-
-    \pause
-
-    \item We mostly experimented with these two forms of $g(t)$:
-\begin{itemize}
-    \item \textbf{Linear}: $g(t) = 1 - t$%;
-
-    \item \textbf{SNR}: $g(t)$ is equal to the signal-to-(signal plus noise) ratio of the diffusion kernel.
-\end{itemize}
-
-    \begin{figure}[htbp!] 
+We use as weighting function $g(t)$ the signal-to-(signal plus noise) ratio of the diffusion kernel:
+    \begin{figure}
     \centering    
-    \includegraphics[width=0.8\textwidth]{assets/images/passaggio_anno/g(t).png}
+    \includegraphics[width=0.5\textwidth]{assets/images/g(t).pdf}
     \end{figure}
-\end{itemize}
-
-
-
-
+Intuition: the gradient of the constraint is more meaningful as the data gets less noisy.
 
 \end{frame} %-----------------------------------
 
-\begin{frame} %-----------------------------------
-\frametitle{Conditional Score Approximation}
 
-\begin{itemize}
-
-    \item We use as weighting function $g(t)$ the signal-to-(signal plus noise) ratio of the diffusion kernel.
-
-    \begin{figure}[htbp!] 
-    \centering    
-    \includegraphics[width=0.7\textwidth]{assets/images/passaggio_anno/g(t).png}
-    \end{figure}
-
-    \item Intuition: the direction given by the gradient of the constraint is more meaningful as the data gets less noisy.
-    
-\end{itemize}
-
-
-\end{frame} %-----------------------------------
 
 
 % \begin{frame} %-----------------------------------
@@ -349,7 +309,7 @@ where $g(t): [0,1] \rightarrow [0,1]$ satisfies $g(0) = 1$ and $g(1) = 0$.
 % \begin{frame} %-----------------------------------
 % \frametitle{Multiple instances constraints}
 
-% \begin{itemize}[<+->]
+% \begin{itemize}%[<+->]
 %     \item Sample multiple instances $(\myvec{x}_1, \ldots, \myvec{x}_n)$ that are tied together by a single multivariate constraint $c(\myvec{\myvec{x}_1, \ldots, \myvec{x}_n})$
     
 %     \item $p_c(\myvec{x}_1, \ldots, \myvec{x}_n) \propto 
@@ -383,25 +343,28 @@ where $g(t): [0,1] \rightarrow [0,1]$ satisfies $g(0) = 1$ and $g(1) = 0$.
 
 % \end{frame} %-----------------------------------
 
-\begin{frame} %-----------------------------------
-\frametitle{Relaxing Logical Constraints}
+% \begin{frame} %-----------------------------------
+% \frametitle{Relaxing Logical Constraints}
 
-\begin{itemize}[<+->]
-    \item The score approximation needs a differentiable constraint, but logical constraints are hard and not differentiable.
+% \begin{itemize}%[<+->]
+%     \item The score approximation needs a differentiable constraint, but logical constraints are hard and not differentiable.
     
-    \item Then, we need to relax logical constraint into soft, differentiable constraints.
+%     \item Then, we need to relax logical constraint into soft, differentiable constraints.
 
-    \item We do this following a Neuro-Symbolic approach.
-\end{itemize}
+%     \item We do this following a Neuro-Symbolic approach.
+% \end{itemize}
 
-\end{frame} %-----------------------------------
+% \end{frame} %-----------------------------------
 
 
 \begin{frame} %-----------------------------------
 \frametitle{Neuro-Symbolic Logical Constraints}
 
 \begin{itemize}
+    \item The score approximation needs a differentiable constraint $\rightarrow$ we relax logical constraint into soft, differentiable constraints.
+
     \item Every atomic predicate and logical connector is associated to a differentiable function (similar to \cite{Badreddine2023logLTNDF}):
+    \bigskip
 
     \begin{figure}
         \centering
@@ -411,7 +374,7 @@ where $g(t): [0,1] \rightarrow [0,1]$ satisfies $g(0) = 1$ and $g(1) = 0$.
 
     \item Connectors are based on probabilistic operations in log-space.
 
-    \item For numerical stability it is necessary to reduce formulas to the negative normal form (NNF).
+    %\item For numerical stability it is necessary to reduce formulas to the negative normal form (NNF).
 
     \item This set of functions has desirable properties: exact
 NNF (De Morgan's laws), numerical stability, tunable hardness ($k$).
@@ -465,21 +428,19 @@ NNF (De Morgan's laws), numerical stability, tunable hardness ($k$).
 %-----------------------------------
 \begin{frame}
 
-\frametitle{Zero-Shot Conditional Sampling}
+\frametitle{Training-Free Conditional Sampling}
 
 \textbf{Input}: pre-trained score-based diffusion model for $p(\myvec{x})$ and a user defined logical constraint $\pi$.
-\newline
-\textbf{Output}: conditional samples from $p(\myvec{x} | \pi)$
-
 \begin{enumerate}
 
     \item Convert the logical constraint to a soft, differentiable constraint using the neuro-symbolic framework
     
     \item Approximate the conditional score by applying the approximation to the original score and the neuro-symbolic constraint 
 
-    \item Plug the approximated conditional score in the original score-based sampling algorithm to generate new points
+    \item Substitute the new score function in the original score-based sampling algorithm to generate new points
 
 \end{enumerate}
+\textbf{Output}: approximated conditional samples from $p(\myvec{x} | \pi)$
 
 No training required!
 
@@ -490,12 +451,21 @@ No training required!
 \frametitle{Experiments}
 
 \begin{itemize}
-    \item Data: tabular, time series, images
-    \item Baseline: rejection sampling (RS) when possible
-    \item Metrics for comparing two samples $X$ and $Y$:
+    \item \textbf{Data}:
+    \begin{itemize}
+        \item Tabular data
+        \item Time series
+        \item Images
+    \end{itemize}
+    \item \textbf{Baseline}:
+    \begin{itemize}
+        \item Rejection Sampling (RS) when possible
+        \item Universal Guidance \citep{bansal2023universal}
+    \end{itemize}
+    \item \textbf{Metrics}:
     \begin{itemize}
         \item Average l1 distance in correlation coefficients.
-        \item Total variation distance: $ D(X,Y):=\frac{1}{2} \sum_i |x_i - y_i|$ where $x_i$ and $y_i$ are the empirical probabilities for a given common binning. This distance is upper bounded by 1. Intuitively, it is the area of each of the two histograms that is not shared.
+        \item Total variation distance: $ D(X,Y):=\frac{1}{2} \sum_i |x_i - y_i|$ where $x_i$ and $y_i$ are the empirical probabilities for a given common binning of samples $X$ and $Y$. %This distance is upper bounded by 1. Intuitively, it is the area of each of the two histograms that is not shared.
     \end{itemize}
     %\item Pre-trained unconditional models were used when possible, otherwise they were trained using SDEs. 
     %\item Comparison with \cite{bansal2023universal}
@@ -513,7 +483,7 @@ Datasets:
     \item Adult (\cite{dataset_adult}): 5 numerical and 10 categorical dimensions.
 \end{itemize}
 
-Unconditional score-based model are trained using SDEs (\cite{sde}). Categorical variables were embedded in continuous space using one-hot encodings.
+Unconditional score-based models are trained using SDEs (\cite{sde}). Categorical variables were embedded in continuous space using one-hot encodings.
 
 \end{frame} %-----------------------------------
 
@@ -546,19 +516,19 @@ Unconditional score-based model are trained using SDEs (\cite{sde}). Categorical
 
 \begin{table}[ht]
 \centering
-\resizebox{\textwidth}{!}{%
+\resizebox{0.9\textwidth}{!}{%
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
 \textbf{Experiment} &
   \textbf{Avg TV} &
-  \textbf{Max TV} &
+  %\textbf{Max TV} &
   \textbf{Avg L1 corr} &
   \textbf{Hard sat} &
-  \multicolumn{1}{c}{\textbf{Hard sat (RS)}} &
-  \multicolumn{1}{c}{\textbf{RS acc. rate}} \\ \midrule
-White wine        & 0.1   & 0.153 & 0.07  & 86\%  & 92\%  & 1.67\% \\
-White wine (multi) & 0.061 & 0.086 & 0.027 & 99\%  & 100\% & 27\%   \\
-Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrule
+  %\multicolumn{1}{c}{\textbf{Hard sat (RS)}} &
+  \multicolumn{1}{c}{\textbf{RS acceptance rate}} \\ \midrule
+White wine        & 0.1    & 0.07  & 86\%  & 1.67\% \\
+White wine (multi) & 0.061  & 0.027 & 99\%   & 27\%   \\
+Adult             & 0.067  & 0.046 & 100\% &  1.73\% \\ \bottomrule
 \end{tabular}%
 }
 \end{table}
@@ -584,7 +554,7 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 %         \includegraphics[width=0.65\linewidth]{assets/images/passaggio_anno/eSIRS.png}
 %     \end{figure}
 
-%      \pause
+%      %\pause
 
 %     \item Consistency constraints:
 
@@ -593,7 +563,7 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 %     \item \textit{Constant population}: $\forall t \ S(t)+I(t) \leq N$
 % \end{itemize}
 
-%      \pause
+%      %\pause
 
 %     \item Additional constraints...
 % \end{itemize}
@@ -640,9 +610,8 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 \begin{frame} %-----------------------------------
 \frametitle{Experiments: Images}
 
-\begin{itemize}[<+->]
 
-    \item Image symmetry:
+    \textbf{Image symmetry}:
 
     \begin{figure}[htbp!] 
     \centering    
@@ -654,9 +623,8 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
     \includegraphics[width=0.5\textwidth]{assets/images/passaggio_anno/celebA_symmetry.png}
     \end{figure}
 
-    Not really effective, one have to trade-off sample quality and constraint satisfaction by tuning the constraint strenght $k$.
+    We had to trade-off sample quality and constraint satisfaction by tuning the constraint strenght $k$.
 
-\end{itemize}
 \end{frame} %-----------------------------------
 
 
@@ -664,10 +632,7 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
 \begin{frame} %-----------------------------------
 \frametitle{Experiments: Images}
 
-\begin{itemize}[<+->]
-
-
-    \item Image restoration (with known corruption process $f$):
+    \textbf{Image restoration} (with known corruption process $f$):
 
     $$\forall i \ f(\myvec{x})_i = \tilde{\myvec{y}}_i$$
 
@@ -676,102 +641,125 @@ Adult             & 0.067 & 0.13  & 0.046 & 100\% & 100\% & 1.73\% \\ \bottomrul
     \includegraphics[width=0.7\textwidth]{assets/images/passaggio_anno/celebA_restoration.png}
     \end{figure}
 
+\end{frame} %-----------------------------------
+
+
+
+% \begin{frame} %-----------------------------------
+% \frametitle{Experiments: Images}
+
+% \begin{itemize}%[<+->]
+
+%     \item MNIST digits sum: \textit{"Sample two MNIST images whose digit labels sum up to 10"}
+
+%     $$\bigvee_{i=1}^{9} \text{{class}}(\myvec{x}, i) \land \text{{class}}(\myvec{y}, 10-i) $$
+
+%         Where "class" is a pretrained classifier.
+
+
+%     \begin{figure}[htbp!] 
+%     \centering    
+%     \includegraphics[width=0.8\textwidth]{assets/images/passaggio_anno/mnist_digits_sum.png}
+%     \end{figure}
+
+
+%     According to the classifier $\approx 96\%$ of pairs sum up to 10, but only 2-8, 6-4 pairs are generated.
+% \end{itemize}
+% \end{frame} %-----------------------------------
+
+
+\begin{frame} %-----------------------------------
+\frametitle{Comparison with Universal Guidance}
+
+\begin{columns}
+    \column{0.5\textwidth}
+        \begin{itemize}            
+        \item Universal Guidance (\cite{bansal2023universal}) is a Synthesis of previous optimization-based approaches, originally applied to images
+
+        \item It involves at each time step an optimization of the denoising prediction $\myvec{x}_0$ (that is a linear transformation of the score), in order to make it satisfy the constraint $c(\myvec{x}_0)$.
+
+        \item Universal guidance fails in two of the tasks we tested (White wine and eSIRS bridging).
+        
+        \item However, it performs better on one of the tasks based on images.
+        \end{itemize}
+
+    \column{0.5\textwidth}
+        \begin{figure} 
+        \centering    
+        \includegraphics[width=0.9\textwidth]{assets/images/white_wine_fw_bw.pdf}
+        \end{figure}
+
+    \end{columns}
+
+\end{frame} %-----------------------------------
+
+
+% \begin{frame} %-----------------------------------
+% \frametitle{Comparison with Universal Guidance}
+
+% \begin{itemize}
+%     \item Universal Guidance (\cite{bansal2023universal}) is probably the state of the art for plug-and-play conditioning.
+
+%     \item Originally applied to imaging problems
     
-\end{itemize}
-\end{frame} %-----------------------------------
+%     \item Synthesis of previous optimization-based approaches for solving inverse problems with diffusion models
+
+%     \item Oversimplifying, it involves at each time step an optimization of the denoising prediction $\myvec{x}_0$ (that is a linear transformation of the score), in order to make it satisfy the constraint $c(\myvec{x}_0)$.
+%     \bigskip
+
+%     \begin{figure} 
+%     \centering    
+%     \includegraphics[width=0.5\textwidth]{assets/images/universal_guidance_cartoon.pdf}
+%     \end{figure}
+
+% \end{itemize}
+
+% \end{frame} %-----------------------------------
 
 
+% \begin{frame} %-----------------------------------
+% \frametitle{Comparison with Universal Guidance}
 
-\begin{frame} %-----------------------------------
-\frametitle{Experiments: Images}
+% Universal guidance fails in two of the tasks we tested (White wine and eSIRS bridging). However, it performs better on one of the tasks based on images.
 
-\begin{itemize}[<+->]
+%     \bigskip
 
-    \item MNIST digits sum: \textit{"Sample two MNIST images whose digit labels sum up to 10"}
+%     % \begin{figure} 
+%     % \centering    
+%     % \includegraphics[width=0.5\textwidth]{assets/images/white_wine_fw_bw.pdf}
+%     % \end{figure}
 
-    $$\bigvee_{i=1}^{9} \text{{class}}(\myvec{x}, i) \land \text{{class}}(\myvec{y}, 10-i) $$
+%     \begin{table}[ht]    
+%     \begin{tabular}{@{}lcccc@{}}
+%     \toprule
+%     \multicolumn{1}{c}{\multirow{2}{*}{Method}} & \multicolumn{2}{c}{White wine} & \multicolumn{2}{c}{eSIRS bridging} \\ \cmidrule(l){2-5} 
+%     \multicolumn{1}{c}{} & \textbf{Avg TV} & \textbf{Max TV} & \textbf{Avg TV} & \textbf{Max TV} \\ \midrule
+%     \textbf{Ours}        & \textbf{0.1}    & \textbf{0.15}  & \textbf{0.13}  & \textbf{0.25}  \\
+%     Univ. Guidance                   & 0.29           & 0.85           & 0.47           & 1.0             \\ \bottomrule
+%     \end{tabular}
+%     \end{table}
 
-        Where "class" is a pretrained classifier.
-
-
-    \begin{figure}[htbp!] 
-    \centering    
-    \includegraphics[width=0.8\textwidth]{assets/images/passaggio_anno/mnist_digits_sum.png}
-    \end{figure}
-
-
-    According to the classifier $\approx 96\%$ of pairs sum up to 10, but only 2-8, 6-4 pairs are generated.
-\end{itemize}
-\end{frame} %-----------------------------------
-
-
-
-\begin{frame} %-----------------------------------
-\frametitle{Comparison with Universal Guidance}
-
-\begin{itemize}
-    \item Universal Guidance (\cite{bansal2023universal}) is probably the state of the art for plug-and-play conditioning.
-
-    \item Originally applied to imaging problems
-    
-    \item Synthesis of previous optimization-based approaches for solving inverse problems with diffusion models
-
-    \item Oversimplifying, it involves at each time step an optimization of the denoising prediction $\myvec{x}_0$ (that is a linear transformation of the score), in order to make it satisfy the constraint $c(\myvec{x}_0)$.
-    \bigskip
-
-    \begin{figure} 
-    \centering    
-    \includegraphics[width=0.5\textwidth]{assets/images/universal_guidance_cartoon.pdf}
-    \end{figure}
-
-\end{itemize}
-
-\end{frame} %-----------------------------------
+% \end{frame} %-----------------------------------
 
 
-\begin{frame} %-----------------------------------
-\frametitle{Comparison with Universal Guidance}
+% \begin{frame} %-----------------------------------
+% \frametitle{Comparison with Universal Guidance}
 
-Universal guidance fails in two of the tasks we tested (White wine and eSIRS bridging).
+% \begin{itemize}
 
-    \bigskip
+%     \item It performs better on image problems:
+%     $$\bigvee_{i=1}^{9} \text{{class}}(\myvec{x}, i) \land \text{{class}}(\myvec{y}, 10-i) $$
 
-    \begin{figure} 
-    \centering    
-    \includegraphics[width=0.6\textwidth]{assets/images/white_wine_fw_bw.pdf}
-    \end{figure}
+%     \begin{figure}[htbp!] 
+%     \centering    
+%     \includegraphics[width=0.8\textwidth]{assets/images/passaggio_anno/mnist_digits_sum_universal_guidance.png}
+%     \end{figure}
 
-    % \begin{table}[ht]    
-    % \begin{tabular}{@{}lcccc@{}}
-    % \toprule
-    % \multicolumn{1}{c}{\multirow{2}{*}{Method}} & \multicolumn{2}{c}{White wine} & \multicolumn{2}{c}{eSIRS bridging} \\ \cmidrule(l){2-5} 
-    % \multicolumn{1}{c}{} & \textbf{Avg TV} & \textbf{Max TV} & \textbf{Avg TV} & \textbf{Max TV} \\ \midrule
-    % \textbf{Ours}        & \textbf{0.1}    & \textbf{0.15}  & \textbf{0.13}  & \textbf{0.25}  \\
-    % Univ. Guidance                   & 0.29           & 0.85           & 0.47           & 1.0             \\ \bottomrule
-    % \end{tabular}
-    % \end{table}
+%     \item It is able to generate high quality samples but it misses the correct approximation of the conditional distribution, probably because it involves an optimization phase.  
 
-\end{frame} %-----------------------------------
+% \end{itemize}
 
-
-\begin{frame} %-----------------------------------
-\frametitle{Comparison with Universal Guidance}
-
-\begin{itemize}
-
-    \item It performs better on image problems:
-    $$\bigvee_{i=1}^{9} \text{{class}}(\myvec{x}, i) \land \text{{class}}(\myvec{y}, 10-i) $$
-
-    \begin{figure}[htbp!] 
-    \centering    
-    \includegraphics[width=0.8\textwidth]{assets/images/passaggio_anno/mnist_digits_sum_universal_guidance.png}
-    \end{figure}
-
-    \item It is able to generate high quality samples but it misses the correct approximation of the conditional distribution, probably because it involves an optimization phase.  
-
-\end{itemize}
-
-\end{frame} %-----------------------------------
+% \end{frame} %-----------------------------------
 
 
 
@@ -788,7 +776,7 @@ Universal guidance fails in two of the tasks we tested (White wine and eSIRS bri
 \begin{itemize}
     \item As complexity increases, it is necessary to trade-off constraint satisfaction with samples quality.
 
-    \item Prefer optimization-based methods when it is more important to obtain high quality samples, rather than approximating the true conditional distribution.
+    \item Optimization-based methods are preferrable when it is more important to obtain high quality samples, rather than approximating the true conditional distribution.
     
 \end{itemize}
 
