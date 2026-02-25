@@ -63,22 +63,14 @@ TabDiff,Magic,0.991,0.002
 TabDiff,News,0.982,0.000
 TabDiff,Shoppers,0.982,0.001
 TabDiff,Average,0.978,
-Fully Factorized,Adult,0.611,0.007
-Fully Factorized,Beijing,0.73,0.003
-Fully Factorized,Default,0.463,0.003
-Fully Factorized,Diabetes,0.918,0.002
-Fully Factorized,Magic,0.784,0.003
-Fully Factorized,News,0.907,0.001
-Fully Factorized,Shoppers,0.605,0.002
-Fully Factorized,Average,0.717,
-Fully Factorized (P),Adult,0.925,0.000
-Fully Factorized (P),Beijing,0.91,0.001
-Fully Factorized (P),Default,0.888,0.001
-Fully Factorized (P),Diabetes,0.968,0.001
-Fully Factorized (P),Magic,0.87,0.001
-Fully Factorized (P),News,0.955,0.001
-Fully Factorized (P),Shoppers,0.937,0.001
-Fully Factorized (P),Average,0.922,
+Fully Factorized,Adult,0.925,0.000
+Fully Factorized,Beijing,0.91,0.001
+Fully Factorized,Default,0.888,0.001
+Fully Factorized,Diabetes,0.968,0.001
+Fully Factorized,Magic,0.87,0.001
+Fully Factorized,News,0.955,0.001
+Fully Factorized,Shoppers,0.937,0.001
+Fully Factorized,Average,0.922,
 ShallowMixture,Adult,0.968,0.001
 ShallowMixture,Beijing,0.968,0.003
 ShallowMixture,Default,0.976,0.001

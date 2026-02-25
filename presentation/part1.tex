@@ -1,4 +1,3 @@
-
 \section{Training-free Conditioning of Score-Based Generative Models by Neuro-Symbolic Constraints}
 
 %-----------------------------------
@@ -6,33 +5,42 @@
 
 \frametitle{Controlling Generative Models}
 
-    A relevant problem in generative models is to efficiently achieve conditional generation forcing user defined logical constraints on generated samples.
+    A relevant problem in generative models is to efficiently achieve conditional generation by forcing user-defined logical constraints on generated samples.
 
     \begin{itemize}
         \item Example: \textit{"Given a generative model for tabular data with 3 fields $p(x_1,x_2,x_3)$, sample from $p(x_1, x_2, x_3 \mid x_1>x_2 \land x_3 = 2)$"}
         \item Example: \textit{"Given a generative model for MNIST images of digits, generate digits that satisfy horizontal symmetry"}
     \end{itemize}
+
+    Directly learning a conditional model $p(\mathbf{x} \mid \mathbf{y})$ for any condition $\mathbf{y}$ is not feasible.
+
+
+    \textbf{Q1}: Can we generate data from a pre-trained diffusion model while enforcing arbitrary
+    user-defined logical constraints?
             
 \end{frame}
 %-----------------------------------
 
-%-----------------------------------
-\begin{frame}
+% %-----------------------------------
+% \begin{frame}
 
-\frametitle{Training-free Conditioning of Score-Based Diffusion Models by Neuro-Symbolic Constraints}
+% \frametitle{Training-free Conditioning of Score-Based Diffusion Models by Neuro-Symbolic Constraints}
 
-\textbf{Contribution}:
+% \textbf{Q1}: Can we generate data from a pre-trained diffusion model while enforcing arbitrary
+% user-defined logical constraints?
 
-\begin{itemize}
-    \item We develop a method for sampling conditioning on logical constraints using unconditional pre-trained score-based generative models, without additional training
+% \textbf{Contribution}:
 
-    \item The objective is to approximate the true conditional distribution, rather than just finding high likelihood samples
+% \begin{itemize}
+%     \item We develop a method for sampling conditioning on logical constraints using unconditional pre-trained score-based generative models, without additional training
 
-    \item General method, but focus on tabular data
-\end{itemize}
+%     \item The objective is to approximate the true conditional distribution, rather than just finding high likelihood samples
 
-\end{frame}
-%-----------------------------------
+%     \item General method, but focus on tabular data
+% \end{itemize}
+
+% \end{frame}
+% %-----------------------------------
 
 
 
@@ -114,7 +122,7 @@
 %-----------------------------------
 \begin{frame}
 
-\frametitle{Background: Score Based Diffusion Models}
+\frametitle{Background: Score-Based Diffusion Models}
 
 Objective: generate new samples from the distribution $p(\mathbf{x})$ that generated the data
 
@@ -156,26 +164,26 @@ Objective: generate new samples from the distribution $p(\mathbf{x})$ that gener
 %-----------------------------------
 
 
-%-----------------------------------
-\begin{frame}
+% %-----------------------------------
+% \begin{frame}
 
-\frametitle{Background: Conditional Generation}
+% \frametitle{Background: Conditional Generation}
 
-Given a joint distribution $p(\myvec{x}, \myvec{y})$, one is often interested in sampling from the conditional distribution $p(\myvec{x} | \myvec{y})$, where $\myvec{y}$ is for example a label. %\pause
+% Given a joint distribution $p(\myvec{x}, \myvec{y})$, one is often interested in sampling from the conditional distribution $p(\myvec{x} | \myvec{y})$, where $\myvec{y}$ is for example a label. %\pause
 
-\begin{itemize}%[<+->]
+% \begin{itemize}%[<+->]
 
-    \item Main approach: train a conditional score $\nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t | \myvec{y})}$
+%     \item Main approach: train a conditional score $\nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t | \myvec{y})}$
 
-    \item Alternatively, do guidance with a noise-dependent classifier $p(\myvec{y} | \myvec{x}_t)$ (\cite{dhariwal2021diffusion}):
-    $$\nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t | \myvec{y})} = \nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t)} + \nabla_{\myvec{x}_t} \ln{p(\myvec{y} | \myvec{x}_t)}$$
+%     %\item Alternatively, do guidance with a noise-dependent classifier $p(\myvec{y} | \myvec{x}_t)$ (\cite{dhariwal2021diffusion}):
+%     %$$\nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t | \myvec{y})} = \nabla_{\myvec{x}_t} \ln{p(\myvec{x}_t)} + \nabla_{\myvec{x}_t} \ln{p(\myvec{y} | \myvec{x}_t)}$$
 
-    \item But if we want a model that can be conditioned by any logical constraint,  conditional training for every possible logical formula is unfeasible.
+%     \item But if we want a model that can be conditioned by any logical constraint,  conditional training for every possible logical formula is unfeasible.
     
-\end{itemize}
+% \end{itemize}
 
-\end{frame}
-%-----------------------------------
+% \end{frame}
+% %-----------------------------------
 
 
 \begin{frame} %-----------------------------------
@@ -183,15 +191,15 @@ Given a joint distribution $p(\myvec{x}, \myvec{y})$, one is often interested in
 \frametitle{Problem Formalization}
 
 \begin{itemize}%[<+->]
-    \item \textbf{Problem}: Given the unconditional score $\nabla_{\myvec{x}_t} \ln p(\myvec{x}_t)$ and a logical constraint $\pi(\myvec{x}): \mathbb{R}^d \rightarrow \{0,1\}$, sample from 
-
-$$ p(\myvec{x} | \pi) \propto p(\myvec{x})\pi(\myvec{x})$$
-
-
+    \item \textbf{Problem}: Given the unconditional score $\nabla_{\myvec{x}_t} \ln p(\myvec{x}_t)$ and a logical constraint $\pi(\myvec{x}): \mathbb{R}^d \rightarrow \{0,1\}$, sample from
+    \begin{equation*}
+        p(\myvec{x} | \pi) \propto p(\myvec{x})\pi(\myvec{x})
+    \end{equation*}
 
     \item \textbf{Continuous relaxation}: Given a differentiable constraint $c(\myvec{x}): \mathbb{R}^d \rightarrow (-\infty, 0]$ expressing the degree of satisfaction, sample from
-    $$p_c(\myvec{x}) \propto p(\myvec{x})e^{c(\myvec{x})}$$
-
+    \begin{equation*}
+        p_c(\myvec{x}) \propto p(\myvec{x})e^{c(\myvec{x})}
+    \end{equation*}
     
 \end{itemize}
 
@@ -243,39 +251,39 @@ $$ p(\myvec{x} | \pi) \propto p(\myvec{x})\pi(\myvec{x})$$
 % \end{frame} %-----------------------------------
 
 
-\begin{frame} %-----------------------------------
-\frametitle{Method}
+% \begin{frame} %-----------------------------------
+% \frametitle{Method}
 
 
 
-In order to sample from the target $p_c(\myvec{x}) \propto p(\myvec{x})e^{c(\myvec{x})}$, we need the conditional noise-dependent score $\nabla_{\myvec{x}_t} \ln{p_c(\myvec{x}_t)}$:
+% To sample from the target $p_c(\myvec{x}) \propto p(\myvec{x})e^{c(\myvec{x})}$, we need the conditional noise-dependent score $\nabla_{\myvec{x}_t} \ln{p_c(\myvec{x}_t)}$:
 
-%\pause
+% %\pause
 
-\begin{itemize}%[<+->]
-    %\item At $t=0$ (no noise) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} = \nabla_{\myvec{x}} \ln{p_c(\myvec{x})} = \nabla_{\myvec{x}} \ln{\frac{p(\myvec{x})e^{c(\myvec{x})}}{Z}}$$
-%$$= \nabla_{\myvec{x}} [\ln{p(\myvec{x})} + c(\myvec{x}) - \ln{Z}] = \nabla_{\myvec{x}} \ln{p(\myvec{x})} + \nabla_{\myvec{x}} c(\myvec{x})$$
+% \begin{itemize}%[<+->]
+%     %\item At $t=0$ (no noise) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} = \nabla_{\myvec{x}} \ln{p_c(\myvec{x})} = \nabla_{\myvec{x}} \ln{\frac{p(\myvec{x})e^{c(\myvec{x})}}{Z}}$$
+% %$$= \nabla_{\myvec{x}} [\ln{p(\myvec{x})} + c(\myvec{x}) - \ln{Z}] = \nabla_{\myvec{x}} \ln{p(\myvec{x})} + \nabla_{\myvec{x}} c(\myvec{x})$$
 
 
-    \item At $t=0$ (no noise) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} =\nabla_{\myvec{x}} \ln{p(\myvec{x})} + \nabla_{\myvec{x}} c(\myvec{x})$$
+%     \item At $t=0$ (no noise $\rightarrow$ analytical form) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} =\nabla_{\myvec{x}_0} \ln{p(\myvec{x}_0)} + \nabla_{\myvec{x}_0} c(\myvec{x}_0)$$
     
-    \item At $t=1$ (only noise) one can assume $\nabla_{\myvec{x}_1} \ln{p_c(\myvec{x}_1)} = \nabla_{\myvec{x}_1} \ln{p(\myvec{x}_1)}$, since enough noise is added to make samples from $p_c(\myvec{x}_1)$ distributed as the prior.
+%     \item At $t=1$ (only noise $\rightarrow$ analytical form) $$\nabla_{\myvec{x}_1} \ln{p_c(\myvec{x}_1)} = \nabla_{\myvec{x}_1} \ln{p(\myvec{x}_1)}$$ %, since enough noise is added to make samples from $p_c(\myvec{x}_1)$ %distributed as the prior.
     
-    \item When $t \in (0,1)$ there is no general analytical form.
+%     \item When $t \in (0,1)$ there is no general analytical form $\rightarrow$ approximation
     
-\end{itemize}
+% \end{itemize}
 
-\end{frame} %-----------------------------------
+% \end{frame} %-----------------------------------
 
 
 \begin{frame} %-----------------------------------
 \frametitle{Conditional Score Approximation}
-
-We can obtain an approximation by interpolating the two regimes:
+We approximate the conditional score by interpolating the two regimes where the conditional score is known without approximation (no noise $t=0$, only noise $t=1$):
+%We can obtain an approximation by interpolating the two regimes:
 $$\tilde{\myvec{s}}_c(\myvec{x}_t, t) = \nabla_{\myvec{x}_t} \ln p(\myvec{x}_t) + g(t) \nabla_{\myvec{x}_t} c(\myvec{x}_t)$$
-where $g(t): [0,1] \rightarrow [0,1]$ satisfies $g(0) = 1$ and $g(1) = 0$.
+where $g(0) = 1$ and $g(1) = 0$.
 
-We use as weighting function $g(t)$ the signal-to-(signal plus noise) ratio of the diffusion kernel:
+We use as weighting function $g(t)$ the signal-to-noise ratio of the diffusion kernel.
     \begin{figure}
     \centering    
     \includegraphics[width=0.5\textwidth]{assets/images/g(t).pdf}
@@ -425,27 +433,33 @@ NNF (De Morgan's laws), numerical stability, tunable hardness ($k$).
 
 % \end{frame} %-----------------------------------
 
-%-----------------------------------
-\begin{frame}
+% %-----------------------------------
+% \begin{frame}
 
-\frametitle{Training-Free Conditional Sampling}
+% \frametitle{Training-Free Conditional Sampling}
 
-\textbf{Input}: pre-trained score-based diffusion model for $p(\myvec{x})$ and a user defined logical constraint $\pi$.
-\begin{enumerate}
+% \textbf{Input}: pre-trained score-based diffusion model $\nabla_{\myvec{x}_t} \ln p(\myvec{x}_t)$ for $p(\myvec{x})$ and logical constraint $\pi$.
+% \begin{enumerate}
 
-    \item Convert the logical constraint to a soft, differentiable constraint using the neuro-symbolic framework
+%     \item Convert the logical constraint to a differentiable constraint using the neuro-symbolic framework:
+%         \begin{equation}
+%             \pi(\mathbf{x}) \rightarrow c(\mathbf{x})
+%         \end{equation}
     
-    \item Approximate the conditional score by applying the approximation to the original score and the neuro-symbolic constraint 
+%     \item Approximate the conditional score
+%         \begin{equation}
+%     \tilde{\myvec{s}}_c(\myvec{x}_t, t) = \nabla_{\myvec{x}_t} \ln p(\myvec{x}_t) + g(t) \nabla_{\myvec{x}_t} c(\myvec{x}_t)
+%         \end{equation}
+    
+%     \item Substitute the new score function in the original score-based sampling algorithm to generate new points
 
-    \item Substitute the new score function in the original score-based sampling algorithm to generate new points
+% \end{enumerate}
+% %\textbf{Output}: approximated conditional samples from $p(\myvec{x} | \pi)$
 
-\end{enumerate}
-\textbf{Output}: approximated conditional samples from $p(\myvec{x} | \pi)$
+% No training required!
 
-No training required!
-
-\end{frame}
-%-----------------------------------
+% \end{frame}
+% %-----------------------------------
 
 \begin{frame} %-----------------------------------
 \frametitle{Experiments}
@@ -453,19 +467,20 @@ No training required!
 \begin{itemize}
     \item \textbf{Data}:
     \begin{itemize}
-        \item Tabular data
-        \item Time series
-        \item Images
+        \item Tabular data: White wine (11 features) dataset and Adult (15 features)
+        \item Time series: simulated eSIRS time series (spreading of a disease in an open population)
+        \item Images: MNIST and CelebA
     \end{itemize}
     \item \textbf{Baseline}:
     \begin{itemize}
-        \item Rejection Sampling (RS) when possible
+        \item Rejection Sampling (RS) as ground truth (when possible)
         \item Universal Guidance \citep{bansal2023universal}
     \end{itemize}
     \item \textbf{Metrics}:
     \begin{itemize}
-        \item Average l1 distance in correlation coefficients.
         \item Total variation distance: $ D(X,Y):=\frac{1}{2} \sum_i |x_i - y_i|$ where $x_i$ and $y_i$ are the empirical probabilities for a given common binning of samples $X$ and $Y$. %This distance is upper bounded by 1. Intuitively, it is the area of each of the two histograms that is not shared.
+        \item Average l1 distance in correlation coefficients.
+        \item Satisfaction of the constraint (\% of samples).
     \end{itemize}
     %\item Pre-trained unconditional models were used when possible, otherwise they were trained using SDEs. 
     %\item Comparison with \cite{bansal2023universal}
@@ -474,49 +489,49 @@ No training required!
 \end{frame} %-----------------------------------
 
 
-\begin{frame} %-----------------------------------
-\frametitle{Experiments: Tabular Data}
+% \begin{frame} %-----------------------------------
+% \frametitle{Experiments: Tabular Data}
 
-Datasets:
-\begin{itemize}
-    \item White wine dataset (\cite{misc_wine_quality_186}): 11 numerical dimensions ($\mathbb{R}^{11}$).
-    \item Adult (\cite{dataset_adult}): 5 numerical and 10 categorical dimensions.
-\end{itemize}
+% Datasets:
+% \begin{itemize}
+%     \item White wine dataset (\cite{misc_wine_quality_186}): 11 numerical dimensions ($\mathbb{R}^{11}$).
+%     \item Adult (\cite{dataset_adult}): 5 numerical and 10 categorical dimensions.
+% \end{itemize}
 
-Unconditional score-based models are trained using SDEs (\cite{sde}). Categorical variables were embedded in continuous space using one-hot encodings.
+% Unconditional score-based models are trained using SDEs (\cite{sde}). Categorical variables were embedded in continuous space using one-hot encodings.
 
-\end{frame} %-----------------------------------
+% \end{frame} %-----------------------------------
 
 
-\begin{frame} %-----------------------------------
-\frametitle{Experiments: Tabular Data}
+% \begin{frame} %-----------------------------------
+% \frametitle{Experiments: Tabular Data}
 
-\begin{enumerate}
-    \item White wine, \texttt{$(\text{fixed acidity} \in [5.0, 6.0]  \lor  \text{fixed acidity} \in [8.0, 9.0]) \land \text{alcohol} \geq 11.0 \land (\text{residual sugar} \leq 5.0 \rightarrow \text{citric acid} \geq 0.5)$}
+% \begin{enumerate}
+%     \item White wine, \texttt{$(\text{fixed acidity} \in [5.0, 6.0]  \lor  \text{fixed acidity} \in [8.0, 9.0]) \land \text{alcohol} \geq 11.0 \land (\text{residual sugar} \leq 5.0 \rightarrow \text{citric acid} \geq 0.5)$}
 
-    \begin{figure}[htbp!] 
-    \centering    
-    \includegraphics[width=0.6\textwidth]{.materiale/articles/zero_shot_conditional_generation/images/white_wine_compressed.pdf}
-    \end{figure}
+%     \begin{figure}[htbp!] 
+%     \centering    
+%     \includegraphics[width=0.6\textwidth]{.materiale/articles/zero_shot_conditional_generation/images/white_wine_compressed.pdf}
+%     \end{figure}
     
-\end{enumerate}
+% \end{enumerate}
 
 
-\end{frame} %-----------------------------------
+% \end{frame} %-----------------------------------
 
 
 \begin{frame} %-----------------------------------
 \frametitle{Experiments: Tabular Data}
 
 \begin{enumerate}
-\setcounter{enumi}{1}
-    \item White wine, \texttt{$\text{alcohol}_1 > \text{alcohol}_2 + 1$}
-    \item Adult, \texttt{$\text{age} \geq 40 \land (\text{race} \neq \text{"White"} \lor \text{education} = \text{"Masters"})$}
+    \item \textbf{White wine dataset}: \texttt{$(\text{fixed acidity} \in [5.0, 6.0]  \lor  \text{fixed acidity} \in [8.0, 9.0]) \land \text{alcohol} \geq 11.0 \land (\text{residual sugar} \leq 5.0 \rightarrow \text{citric acid} \geq 0.5)$}
+    \item \textbf{White wine dataset}: \texttt{$\text{alcohol}_1 > \text{alcohol}_2 + 1$}
+    \item \textbf{Adult dataset}: \texttt{$\text{age} \geq 40 \land (\text{race} \neq \text{"White"} \lor \text{education} = \text{"Masters"})$}
 \end{enumerate}
 
 \begin{table}[ht]
 \centering
-\resizebox{0.9\textwidth}{!}{%
+\resizebox{0.8\textwidth}{!}{%
 \begin{tabular}{@{}lcccccc@{}}
 \toprule
 \textbf{Experiment} &
@@ -534,8 +549,8 @@ Adult             & 0.067  & 0.046 & 100\% &  1.73\% \\ \bottomrule
 \end{table}
 
 \begin{itemize}
-    \item In general low error for simple constraints, still acceptable for complex constraints.
-    \item This methods allow to sample more efficiently in low probability regions.
+    \item Low error for simple constraints, still acceptable for complex constraints.
+    \item More efficient sampling in low probability regions.
 \end{itemize}
 
 \end{frame} %-----------------------------------
@@ -615,15 +630,15 @@ Adult             & 0.067  & 0.046 & 100\% &  1.73\% \\ \bottomrule
 
     \begin{figure}[htbp!] 
     \centering    
-    \includegraphics[width=0.5\textwidth]{assets/images/passaggio_anno/mnist_symmetry.png}
+    \includegraphics[width=0.45\textwidth]{assets/images/passaggio_anno/mnist_symmetry.png}
     \end{figure}
 
     \begin{figure}[htbp!] 
     \centering    
-    \includegraphics[width=0.5\textwidth]{assets/images/passaggio_anno/celebA_symmetry.png}
+    \includegraphics[width=0.45\textwidth]{assets/images/passaggio_anno/celebA_symmetry.png}
     \end{figure}
 
-    We had to trade-off sample quality and constraint satisfaction by tuning the constraint strenght $k$.
+    We had to trade-off sample quality and constraint satisfaction by tuning the constraint strength $k$.
 
 \end{frame} %-----------------------------------
 
@@ -633,12 +648,11 @@ Adult             & 0.067  & 0.046 & 100\% &  1.73\% \\ \bottomrule
 \frametitle{Experiments: Images}
 
     \textbf{Image restoration} (with known corruption process $f$):
-
     $$\forall i \ f(\myvec{x})_i = \tilde{\myvec{y}}_i$$
 
     \begin{figure}[htbp!] 
     \centering    
-    \includegraphics[width=0.7\textwidth]{assets/images/passaggio_anno/celebA_restoration.png}
+    \includegraphics[width=0.6\textwidth]{assets/images/passaggio_anno/celebA_restoration.png}
     \end{figure}
 
 \end{frame} %-----------------------------------
@@ -667,31 +681,63 @@ Adult             & 0.067  & 0.046 & 100\% &  1.73\% \\ \bottomrule
 % \end{itemize}
 % \end{frame} %-----------------------------------
 
-
 \begin{frame} %-----------------------------------
-\frametitle{Comparison with Universal Guidance}
+\frametitle{Comparison with Universal Guidance \citep{bansal2023universal}}
 
-\begin{columns}
-    \column{0.5\textwidth}
+
         \begin{itemize}            
-        \item Universal Guidance (\cite{bansal2023universal}) is a Synthesis of previous optimization-based approaches, originally applied to images
+        \item Synthesis of previous optimization-based approaches, originally applied to images
 
-        \item It involves at each time step an optimization of the denoising prediction $\myvec{x}_0$ (that is a linear transformation of the score), in order to make it satisfy the constraint $c(\myvec{x}_0)$.
+        %\item It involves at each time step an optimization of the denoising prediction $\myvec{x}_0$, in order to make it satisfy the constraint $c(\myvec{x}_0)$.
 
-        \item Universal guidance fails in two of the tasks we tested (White wine and eSIRS bridging).
-        
-        \item However, it performs better on one of the tasks based on images.
+        \item It fails in two of the tasks we tested (White wine and eSIRS bridging).
+            
+        %\item It performs better on one of the tasks based on images.
         \end{itemize}
 
-    \column{0.5\textwidth}
-        \begin{figure} 
-        \centering    
-        \includegraphics[width=0.9\textwidth]{assets/images/white_wine_fw_bw.pdf}
-        \end{figure}
+        \begin{table}[ht]
+\centering
+%\caption{Comparison with Universal Guidance. On the white wine and eSIRS bridging tasks our method performs significantly better in terms of TVD (we report average and maximum distance over the marginals).}\label{tab:universal_guidance_comparison_short}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\multicolumn{1}{c}{\multirow{2}{*}{Method}} & \multicolumn{2}{c}{White wine} & \multicolumn{2}{c}{eSIRS bridging} \\ \cmidrule(l){2-5} 
+\multicolumn{1}{c}{} & \textbf{Avg TVD} & \textbf{Max TVD} & \textbf{Avg TVD} & \textbf{Max TVD} \\ \midrule
+\textbf{Ours}        & $\mathbf{0.1}$    & $\mathbf{0.15}$  & $\mathbf{0.13}$  & $\mathbf{0.25}$  \\
+Univ. Guidance                   & $0.29$           & $0.85$           & $0.47$           & $1.0$             \\ \bottomrule
+\end{tabular}
+\end{table}
 
-    \end{columns}
 
 \end{frame} %-----------------------------------
+
+
+
+% \begin{frame} %-----------------------------------
+% \frametitle{Comparison with Universal Guidance \citep{bansal2023universal}}
+
+% \begin{columns}
+%     \column{0.5\textwidth}
+%         \begin{itemize}            
+%         \item Synthesis of previous optimization-based approaches, originally applied to images
+
+%         %\item It involves at each time step an optimization of the denoising prediction $\myvec{x}_0$, in order to make it satisfy the constraint $c(\myvec{x}_0)$.
+
+%         \item It fails in two of the tasks we tested (White wine and eSIRS bridging).
+    
+%         \item 
+        
+%         %\item It performs better on one of the tasks based on images.
+%         \end{itemize}
+
+%     \column{0.5\textwidth}
+%         \begin{figure} 
+%         \centering    
+%         \includegraphics[width=0.9\textwidth]{assets/images/white_wine_fw_bw.pdf}
+%         \end{figure}
+
+%     \end{columns}
+
+% \end{frame} %-----------------------------------
 
 
 % \begin{frame} %-----------------------------------
@@ -769,14 +815,14 @@ Adult             & 0.067  & 0.046 & 100\% &  1.73\% \\ \bottomrule
 \textbf{Contributions}
 \begin{itemize}
     \item We developed a method for training-free conditional distribution approximation with logical constraints, that can be applied to any pre-trained score-based diffusion model.
-    \item Our method is performs well on training-free conditional distribution approximation on tabular data with logical constraints.
+    \item Our method performs well on training-free conditional distribution approximation on tabular data with logical constraints.
 \end{itemize}
 
 \textbf{Limitations}
 \begin{itemize}
-    \item As complexity increases, it is necessary to trade-off constraint satisfaction with samples quality.
+    \item As complexity increases, it is necessary to trade off constraint satisfaction with sample quality.
 
-    \item Optimization-based methods are preferrable when it is more important to obtain high quality samples, rather than approximating the true conditional distribution.
+    \item Optimization-based methods are preferable when it is more important to obtain high-quality samples, rather than approximating the true conditional distribution.
     
 \end{itemize}
 

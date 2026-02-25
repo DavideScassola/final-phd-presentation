@@ -43,6 +43,31 @@
 
 
 \begin{frame} %-----------------------------------
+\frametitle{Method}
+
+
+
+To sample from the target $p_c(\myvec{x}) \propto p(\myvec{x})e^{c(\myvec{x})}$, we need the conditional noise-dependent score $\nabla_{\myvec{x}_t} \ln{p_c(\myvec{x}_t)}$:
+
+%\pause
+
+\begin{itemize}%[<+->]
+    %\item At $t=0$ (no noise) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} = \nabla_{\myvec{x}} \ln{p_c(\myvec{x})} = \nabla_{\myvec{x}} \ln{\frac{p(\myvec{x})e^{c(\myvec{x})}}{Z}}$$
+%$$= \nabla_{\myvec{x}} [\ln{p(\myvec{x})} + c(\myvec{x}) - \ln{Z}] = \nabla_{\myvec{x}} \ln{p(\myvec{x})} + \nabla_{\myvec{x}} c(\myvec{x})$$
+
+
+    \item At $t=0$ (no noise $\rightarrow$ analytical form) $$\nabla_{\myvec{x}_0} \ln{p_c(\myvec{x}_0)} =\nabla_{\myvec{x}_0} \ln{p(\myvec{x}_0)} + \nabla_{\myvec{x}_0} c(\myvec{x}_0)$$
+    
+    \item At $t=1$ (only noise $\rightarrow$ analytical form) $$\nabla_{\myvec{x}_1} \ln{p_c(\myvec{x}_1)} = \nabla_{\myvec{x}_1} \ln{p(\myvec{x}_1)}$$ %, since enough noise is added to make samples from $p_c(\myvec{x}_1)$ %distributed as the prior.
+    
+    \item When $t \in (0,1)$ there is no general analytical form $\rightarrow$ approximation
+    
+\end{itemize}
+
+\end{frame} %-----------------------------------
+
+
+\begin{frame} %-----------------------------------
 \frametitle{Comparison with Universal Guidance}
 
 Universal guidance fails in two of the tasks we tested (White wine and eSIRS bridging). However, it performs better on one of the tasks based on images.
@@ -82,6 +107,33 @@ Universal guidance fails in two of the tasks we tested (White wine and eSIRS bri
 
 \end{frame} %-----------------------------------
 
+%-----------------------------------
+\begin{frame}
+
+\frametitle{Training-Free Conditional Sampling}
+
+\textbf{Input}: pre-trained score-based diffusion model $\nabla_{\myvec{x}_t} \ln p(\myvec{x}_t)$ for $p(\myvec{x})$ and logical constraint $\pi$.
+\begin{enumerate}
+
+    \item Convert the logical constraint to a differentiable constraint using the neuro-symbolic framework:
+        \begin{equation}
+            \pi(\mathbf{x}) \rightarrow c(\mathbf{x})
+        \end{equation}
+    
+    \item Approximate the conditional score
+        \begin{equation}
+    \tilde{\myvec{s}}_c(\myvec{x}_t, t) = \nabla_{\myvec{x}_t} \ln p(\myvec{x}_t) + g(t) \nabla_{\myvec{x}_t} c(\myvec{x}_t)
+        \end{equation}
+    
+    \item Substitute the new score function in the original score-based sampling algorithm to generate new points
+
+\end{enumerate}
+%\textbf{Output}: approximated conditional samples from $p(\myvec{x} | \pi)$
+
+No training required!
+
+\end{frame}
+%-----------------------------------
 
 % -------------------------------------------------------------------------------------
 \begin{frame}[fragile]{Datasets Details (1)}
@@ -282,6 +334,27 @@ Walmart               & $1$m $48$s \\
 \end{frame}
 % -------------------------------------------------------------------------------------
 
+% -------------------------------------------------------------------------------------
+\begin{frame}[fragile]{Controlling Generalization Error}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+
+      \begin{itemize}
+        \item We randomly split the nodes between train and validation nodes.
+        \item “Within sample” generalization $\rightarrow$ no need for training with many i.i.d. connected components!
+        \item Bottleneck on the GNN embedding size $\rightarrow$ prevents graph memorization
+      \end{itemize}
+
+    \column{0.45\textwidth}
+      \begin{figure}
+        \includegraphics[width=0.8\textwidth, page=6]{assets/images/graphics_compressed.pdf}
+        %\caption{Relational database schema.}
+      \end{figure}
+  \end{columns}
+
+\end{frame}
+% -------------------------------------------------------------------------------------
+
 
 \begin{frame}[fragile]{wNMIE}
 
@@ -303,6 +376,68 @@ Walmart               & $1$m $48$s \\
 
 \end{frame}
 
+
+\begin{frame}[fragile]{Example of Overparameterized Circuit}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.75\textwidth, page=3]{assets/images/circuits.pdf}
+        %\caption{Example of overparameterized circuit (K=2)}
+    \end{figure}
+    
+\end{frame}
+
+
+\begin{frame}[fragile]{Structure Learning}
+\begin{columns}
+    \column{0.6\textwidth}
+    \begin{itemize}
+        \item The graph defining the order sets of variables are mixed together is called the region graph.
+        \item We use a method based on the Chow-Liu algorithm \citep{vergari2015simplifying,rahman2014cutset,choi2011learning} to learn the structure of the region graph from data.
+        \item The Chow-Liu algorithm is an efficient method for constructing a tree-shaped Bayesian network approximating a joint distribution, from which a dataset of samples is available.
+        \item In such a region graph, highly dependent variables are mixed together earlier.
+    \end{itemize}
+
+    \column{0.4\textwidth}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth, page=1]{assets/images/region_graphs.pdf}
+    \end{figure}
+\end{columns}
+\end{frame}
+
+% -------------------------------------------------------------------------------------
+
+\begin{frame}[fragile]{Results: MLE}
+
+    Machine Learning Efficiency (MLE) is low for the fully factorized model, but there is also some saturation effect.
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/mle.pdf}
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}[fragile]{XGBoost-Detection}
+
+    \begin{columns}
+        \column{0.5\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=1.0\textwidth]{images/xgb.pdf}
+            \end{figure}
+        \column{0.5\textwidth}
+            \begin{itemize}
+                \item XGBoost better distinguishes between models.
+                %\item wNMIWE is not influenced by marginals, fully factorized models perform poorly as expected.
+                \item TabPC is competitive with state-of-the-art diffusion-based models.
+                \item TabPC still struggles for some datasets, probably due to the large number of features and high correlations.
+            \end{itemize}
+
+    \end{columns}
+
+
+\end{frame}
 
 % -------------------------------------------------------------------------------------
 

@@ -9,7 +9,7 @@
 % TODO: update with your publications
 
 These are the publications (or submissions) that form the basis of this thesis:
-\begin{itemize}
+\begin{enumerate}
 %\nobibliography*
     % \item \citet{scassola2025zero} \bibentry{scassola2025zero}.\footnotemark
     % \footnotetext{\scriptsize Code available at: \url{https://github.com/DavideScassola/score-based-constrained-generation}}
@@ -24,9 +24,9 @@ These are the publications (or submissions) that form the basis of this thesis:
     
     \item \textbf{Graph-Conditional Flow Matching for Relational Data Generation}. Scassola, Davide, Sebastiano Saccani, and Luca Bortolussi. \textcolor{blue}{Accepted at AAAI 2026}.    
     
-    \item \textbf{A Sobering Look at Tabular Data Generation with Probabilistic Circuits}. Scassola, D., Ponsford D., et al. \textcolor{blue}{Submitted to UAI 2026}.
+    \item \textbf{A Sobering Look at Tabular Data Generation with Probabilistic Circuits}. Scassola, D., Ponsford, D., et al. \textcolor{blue}{Submitted to UAI 2026}.
     
-\end{itemize}
+\end{enumerate}
 
 Other publications:
 \small
@@ -50,19 +50,19 @@ Other publications:
 %-----------------------------------
 \begin{frame}
 
-\frametitle{Context}
+\frametitle{Generative Models for Tabular Data}
 
 \begin{itemize}
-    \item Generative modeling has advanced rapidly, its development mostly focused on unstructured data as images, videos, audios and text.
-    \item \textbf{Tabular data generation} is less popular despite its practical importance (financial transactions, patient records, commercial databases, etc)
+    \item Generative modeling has advanced rapidly, its development mostly focused on unstructured data such as images, videos, audio, and text.
+    \item \textbf{Tabular data generation} is less popular despite its practical importance (financial transactions, patient records, commercial databases, etc.)
     \item Tabular data is structured data organized in rows and columns, where each row is an observation and each column is a feature or attribute.
     \bigskip
     \input{tables/tabular_data_example.tex}
     \bigskip
+    \item \textbf{Challenges}: complex marginals, intricate dependencies, heterogeneous data types, missing data, hard constraints, quality evaluation, privacy concerns, relational data.
     %\item Tabular data is ubiquitous in real-world systems: financial transactions, patient records, commercial databases, etc.
     %\item Key applications of tabular data generation: privacy preservation, data augmentation, probabilistic inference, anomaly detection.
 \end{itemize}
-
 
 
 \end{frame}
@@ -76,7 +76,7 @@ Other publications:
 \begin{itemize}
     \item \textbf{Privacy preservation}: share synthetic data that mimics the statistical properties of real data without revealing sensitive information.
     \item \textbf{Data augmentation}: create additional training data to improve the performance of machine learning models, especially in cases of class imbalance or limited data availability.
-    \item \textbf{Probabilistic inference}: perform probabilistic reasoning on the generated data, e.g., computing probabilities (anomaly detection).
+    \item \textbf{Probabilistic queries}: perform probabilistic reasoning on the generated data, e.g., computing probabilities (anomaly detection).
 \end{itemize}
 
 \begin{center}
@@ -87,35 +87,35 @@ Other publications:
 %-----------------------------------
 
 
-%-----------------------------------
-\begin{frame}
+% %-----------------------------------
+% \begin{frame}
 
-\frametitle{Challenges of Tabular Data Generation}
+% \frametitle{Challenges of Tabular Data Generation}
 
-\begin{itemize}
-    \item \textbf{Complex distributions}: multimodality, heavy tails, inflated values
-    \item \textbf{Intricate dependencies}: nonlinear, high-order, non-monotonic relationships
-    \item \textbf{Heterogeneous data types}: continuous, ordinal, categorical, binary, temporal
-    \item \textbf{Missing data}: cannot be trivially imputed
-    \item \textbf{Hard constraints}: physical, logical, or business rules
-    \item \textbf{Quality evaluation}: difficult to assess compared to images or text
-    \item \textbf{Privacy concerns}: avoid leaking sensitive information
-    \item \textbf{Relational data}: complex dependencies across multiple interconnected tables
-\end{itemize}
+% \begin{itemize}
+%     \item \textbf{Complex distributions}: multimodality, heavy tails, inflated values
+%     \item \textbf{Intricate dependencies}: nonlinear, high-order, non-monotonic relationships
+%     \item \textbf{Heterogeneous data types}: continuous, ordinal, categorical, binary, temporal
+%     \item \textbf{Missing data}: cannot be trivially imputed
+%     \item \textbf{Hard constraints}: physical, logical, or business rules
+%     \item \textbf{Quality evaluation}: difficult to assess compared to images or text
+%     \item \textbf{Privacy concerns}: avoid leaking sensitive information
+%     \item \textbf{Relational data}: complex dependencies across multiple interconnected tables
+% \end{itemize}
 
-\end{frame}
-%-----------------------------------
+% \end{frame}
+% %-----------------------------------
 
 
 %-----------------------------------
 \begin{frame}
 \frametitle{Limitations of Current Techniques}
 
-Despite significant progress, several limitations remain, especially regarding flexibility:
+Despite significant progress, recently driven by powerful diffusion models, several limitations remain, especially regarding flexibility:
 
 \begin{itemize}
-    \item \textbf{Constraints}: Many models cannot efficiently incorporate user-specified constraints in the generated data (known facts, partial observations, logical rules). %Most existing methods require retraining or fine-tuning the model for each new constraint.
-    \item \textbf{Relational data}: Current approaches for relational data generation cannot generate any type of relational dataset, or are not expressive enough to model complex inter-table dependencies.
+    \item \textbf{Constraints}: It is hard to efficiently incorporate user-specified constraints in the generated data (known facts, partial observations, logical rules). %Most existing methods require retraining or fine-tuning the model for each new constraint.
+    \item \textbf{Relational data}: It is hard to generate realistic relational datasets (multiple tables with foreign keys). %Current approaches for relational data generation cannot generate any type of relational dataset, or are not expressive enough to model complex inter-table dependencies.
     \item \textbf{Probabilistic queries}: General probabilistic queries are generally not possible with most state-of-the-art models for tabular data generation: density computation, marginalization, inference under missing data, etc.
 \end{itemize}
 
@@ -127,10 +127,11 @@ Despite significant progress, several limitations remain, especially regarding f
 
 \frametitle{Contribution}
 
-\textbf{Research Questions:}
+This thesis aims at answering the following questions:
+
 \begin{itemize}
     \item \textbf{Q1}: Can we generate data from a pre-trained diffusion model while enforcing arbitrary user-defined logical constraints?
-    \item \textbf{Q2}: Can we design expressive generative models capable of generating relational data with complex structural dependencies without any implicit independence assumptions?
+    \item \textbf{Q2}: Can we design expressive generative models capable of generating relational data with complex structural dependencies?
     \item \textbf{Q3}: Can we train tractable yet expressive generative models for tabular data?
 \end{itemize}
 
@@ -138,7 +139,7 @@ Despite significant progress, several limitations remain, especially regarding f
 
 \textbf{Contributions:}
 \begin{enumerate}
-    \item Method for conditional sampling from Score-based Diffusion Models under logical constraints
+    \item Method for conditional sampling from score-based diffusion models under logical constraints
     \item Flow-matching framework for relational databases with arbitrary structures
     \item Analysis of probabilistic circuits as tractable generative models
 \end{enumerate}
